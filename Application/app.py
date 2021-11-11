@@ -112,30 +112,51 @@ class VideoPage(tk.Frame):
         self.delay = 1
         self.filename = None
         self.video_end = False
+        self.loop = False
 
         #IMAGES
         self.pause_img = ImageTk.PhotoImage(Image.open("assets/images/off.png"))
         self.play_img = ImageTk.PhotoImage(Image.open("assets/images/on.png"))
 
+        self.loop_off_img = ImageTk.PhotoImage(Image.open("assets/images/loop_off.png"))
+        self.loop_on_img = ImageTk.PhotoImage(Image.open("assets/images/loop_on.png"))
+
+        self.repeat_img = ImageTk.PhotoImage(Image.open("assets/images/repeat.png"))
+
+        self.record_off_img = ImageTk.PhotoImage(Image.open("assets/images/record_off.png"))
+        self.record_on_img = ImageTk.PhotoImage(Image.open("assets/images/record_on.png"))
+
         self.canvas = tk.Canvas(self, width=500, height=500)
-        self.canvas.pack(anchor="center")
+        self.canvas.pack(anchor="center", padx=20, pady=20)
         self.photo = ImageTk.PhotoImage(Image.open("not_available.jpg"))
         self.canvas.create_image(0, 0, image=self.photo, anchor='nw')
+
+        self.video_btns = tk.Frame(self, background="#23272a")
+        self.video_btns.pack()
+
+        self.btn_pause = tk.Button(self.video_btns, image=self.pause_img, command=self.switch_play, bd=0, background="#23272a", activebackground="#23272a")
+        self.btn_pause.grid(row=1, column=3, padx=15, pady=15)
+
+        self.btn_loop = tk.Button(self.video_btns, image=self.loop_off_img, command=self.switch_loop, bd=0, background="#23272a", activebackground="#23272a")
+        self.btn_loop.grid(row=1, column=2, padx=15, pady=15)
+
+        self.btn_repeat = tk.Button(self.video_btns, image=self.repeat_img, command=self.replay_video, bd=0, background="#23272a", activebackground="#23272a")
+        self.btn_repeat.grid(row=1, column=1, padx=15, pady=15)
+
+        self.btn_record = tk.Button(self.video_btns, image=self.record_off_img, command=self.video_record, bd=0, background="#23272a", activebackground="#23272a")
+        self.btn_record.grid(row=1, column=4, padx=15, pady=15)
 
         self.btn_open_file = tk.Button(self, text="Open File", width=50, command=self.open_file)
         self.btn_open_file.pack(anchor="center")
 
         self.btn_snapshot = tk.Button(self, text="Snapshot", width=50, command=self.take_snapshot)
         self.btn_snapshot.pack(anchor="center")
-        
-        self.btn_pause = tk.Button(self, image=self.pause_img, command=self.switch_play, bd=0, background="#23272a", activebackground="#23272a")
-        self.btn_pause.pack(anchor="center")
 
-        self.btn_replay = tk.Button(self, text="Replay", width=50, command=self.replay_video)
-        self.btn_replay.pack(anchor="center")
+        #self.btn_replay = tk.Button(self, text="Replay", width=50, command=self.replay_video)
+        #self.btn_replay.pack(anchor="center")
 
-        self.btn_record = tk.Button(self, text="Record Off", width=50, command=self.video_record)
-        self.btn_record.pack(anchor="center")
+        #self.btn_record = tk.Button(self, text="Record Off", width=50, command=self.video_record)
+        #self.btn_record.pack(anchor="center")
 
         self.btn_face_detect = tk.Button(self, text="Face Detect Off", width=50, command=self.face_detection_video)
         self.btn_face_detect.pack(anchor="center")
@@ -170,9 +191,22 @@ class VideoPage(tk.Frame):
                 # Stop Recording
                 self.video_end = True
                 self.vid.recording = False
-                self.btn_record.config(text="Record Off")
+                self.btn_record.config(image=self.record_off_img)
+                if self.loop:
+                    self.pause = False
+                    print("hello")
+                    self.replay_video()
             if not self.pause:
                 self.after(self.delay, self.play_video)
+    
+    def switch_loop(self):
+        if self.vid:
+            if self.loop:
+                self.loop = False
+                self.btn_loop.config(image=self.loop_off_img)
+            else:
+                self.loop = True
+                self.btn_loop.config(image=self.loop_on_img)
     
     def pause_video(self):
         self.pause = True
@@ -195,7 +229,7 @@ class VideoPage(tk.Frame):
         if self.vid:
             self.vid.refresh()
             self.video_end = False
-            self.btn_pause.config(text="Pause")
+            self.btn_pause.config(image=self.pause_img)
             self.resume_video()
     
     def open_file(self):
@@ -213,11 +247,10 @@ class VideoPage(tk.Frame):
         if self.vid and not self.video_end:
             if self.vid.recording:
                 self.vid.recording = False
-                self.btn_record.config(text="Record Off")
+                self.btn_record.config(image=self.record_off_img)
             else:
                 self.vid.recording = True
-                self.btn_record.config(text="Record On")
-                self.vid.record_video()
+                self.btn_record.config(image=self.record_on_img)
 
     def face_detection_video(self):
         if self.vid:
@@ -285,7 +318,7 @@ class VideoCapture:
             frame = cv2.resize(frame, (self.width, self.height), interpolation=cv2.INTER_LINEAR)
             if self.recording:
                 self.record_frame = frame
-                frame = cv2.putText(cv2.flip(frame,1),"Recording...", (0,25), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 4)
+                frame = cv2.putText(frame, "Recording...", (10, 50), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 4)
             return cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
     
     def refresh(self):
