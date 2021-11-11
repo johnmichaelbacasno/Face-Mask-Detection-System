@@ -3,11 +3,16 @@ from tkinter import ttk
 from tkinter import filedialog
 import cv2
 from PIL import Image, ImageTk
-import time
 import mediapipe as mp
 import numpy as np
+import datetime, time
+import os, sys
+from threading import Thread
 
 face_detection = mp.solutions.face_detection.FaceDetection()
+
+WHITE = "#FFFFFF"
+BLUE = "#4C9FFC"
 
 def get_detection(frame):
     height, width, channel = frame.shape
@@ -97,9 +102,8 @@ class MenuPage(tk.Frame):
         button_typing = tk.Button(self, text="Camera", command=lambda: controller.show_frame(CameraPage), width=12, fg="#ffffff", bg="#7289da", bd=0, activebackground="#2c2f33", activeforeground="#ffffff", font=("Tw Cen MT", 20, "bold"), relief="flat")
         button_typing.pack(pady=20)
 
-        button_back = tk.Button(self, text="Back", command=None, width=12, fg="#ffffff", bg="#f04747", bd=0, activebackground="#2c2f33", activeforeground="#ffffff", font=("Tw Cen MT", 20, "bold"), relief="flat")
+        button_back = tk.Button(self, text="Back", command=self.controller.destroy, width=12, fg="#ffffff", bg="#f04747", bd=0, activebackground="#2c2f33", activeforeground="#ffffff", font=("Tw Cen MT", 20, "bold"), relief="flat")
         button_back.pack(pady=20)
-
 class VideoPage(tk.Frame):
     def __init__(self, parent, controller):
         tk.Frame.__init__(self, parent)
@@ -110,19 +114,29 @@ class VideoPage(tk.Frame):
         self.delay = 1
         self.filename = None
 
+        #IMAGES
+        self.pause_img = ImageTk.PhotoImage(Image.open("assets/images/off.png"))
+        self.play_img = ImageTk.PhotoImage(Image.open("assets/images/on.png"))
+
         self.canvas = tk.Canvas(self, width=500, height=500)
         self.canvas.pack(anchor="center")
         self.photo = ImageTk.PhotoImage(Image.open("not_available.jpg"))
         self.canvas.create_image(0, 0, image=self.photo, anchor='nw')
 
+        self.btn_open_file = tk.Button(self, text="Open File", width=50, command=self.open_file)
+        self.btn_open_file.pack(anchor="center")
+
         self.btn_snapshot = tk.Button(self, text="Snapshot", width=50, command=self.take_snapshot)
         self.btn_snapshot.pack(anchor="center")
-
-        self.btn_pause = tk.Button(self, text="Pause", width=50, command=self.switch_play)
+        
+        self.btn_pause = tk.Button(self, image=self.pause_img, command=self.switch_play, bd=0, background="#23272a", activebackground="#23272a")
         self.btn_pause.pack(anchor="center")
 
         self.btn_replay = tk.Button(self, text="Replay", width=50, command=self.replay_video)
         self.btn_replay.pack(anchor="center")
+
+        self.btn_record = tk.Button(self, text="Record Off", width=50, command=self.video_record)
+        self.btn_record.pack(anchor="center")
 
         self.btn_face_detect = tk.Button(self, text="Face Detect Off", width=50, command=self.face_detection_video)
         self.btn_face_detect.pack(anchor="center")
@@ -136,10 +150,7 @@ class VideoPage(tk.Frame):
         self.btn_flip = tk.Button(self, text="Flip Off", width=50, command=self.flip_video)
         self.btn_flip.pack(anchor="center")
 
-        self.btn_open_file = tk.Button(self, text="Open File", width=50, command=self.open_file)
-        self.btn_open_file.pack(anchor="center")
-
-        self.btn_back = tk.Button(self, text="Back", width=50, command=lambda: controller.show_frame(MenuPage))
+        self.btn_back = tk.Button(self, text="Back", width=50, command=self.destroy)
         self.btn_back.pack(anchor="center")
 
     def take_snapshot(self):
@@ -155,6 +166,8 @@ class VideoPage(tk.Frame):
                 self.canvas.create_image(0, 0, image=self.photo, anchor='nw')
             except:
                 self.pause_video()
+                self.vid.recording = False
+                self.btn_record.config(text="Record Off")
             if not self.pause:
                 self.after(self.delay, self.play_video)
     
@@ -165,10 +178,10 @@ class VideoPage(tk.Frame):
         if self.vid:
             if self.pause:
                 self.resume_video()
-                self.btn_pause.config(text="Pause")
+                self.btn_pause.config(image=self.pause_img)
             else:
                 self.pause_video()
-                self.btn_pause.config(text="Play")
+                self.btn_pause.config(image=self.play_img)
     
     def resume_video(self):
         if self.pause:
@@ -191,6 +204,16 @@ class VideoPage(tk.Frame):
             self.btn_negative.config(text="Negative Off")
             self.btn_flip.config(text="Flip Off")
             self.resume_video()
+    
+    def video_record(self):
+        if self.vid:
+            if self.vid.recording:
+                self.vid.recording = False
+                self.btn_record.config(text="Record Off")
+            else:
+                self.vid.recording = True
+                self.btn_record.config(text="Record On")
+                self.vid.record_video()
 
     def face_detection_video(self):
         if self.vid:
@@ -243,6 +266,9 @@ class VideoCapture:
         self.negative_effect_is_enabled = False
         self.grey_effect_is_enabled = False
         self.flip_effect_is_enabled = False
+        self.recording = False
+        self.out = None
+        self.record_frame = None
 
     def get_frame(self):
         if self.vid.isOpened():
@@ -253,11 +279,28 @@ class VideoCapture:
             frame = make_square(frame)
             if self.grey_effect_is_enabled: frame = grey(frame)
             frame = cv2.resize(frame, (self.width, self.height), interpolation=cv2.INTER_LINEAR)
+            if self.recording:
+                self.record_frame = frame
+                frame = cv2.putText(cv2.flip(frame,1),"Recording...", (0,25), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 4)
             return cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
     
     def refresh(self):
         self.vid = cv2.VideoCapture(self.source)
-        
+    
+    def record_video(self):
+        if self.recording:
+            fourcc = cv2.VideoWriter_fourcc(*'MP4V')
+            self.out = cv2.VideoWriter('vid_{}.mp4'.format(str(datetime.datetime.now() ).replace(":",'')), fourcc, 20.0, (500, 500))
+            thread = Thread(target=self.record, args=[self.out,])
+            thread.start()
+        else:
+            self.out.release()
+    
+    def record(self, out):
+        while self.recording:
+            time.sleep(0.05)
+            self.out.write(self.record_frame)
+    
     def __del__(self):
         if self.vid.isOpened():
             self.vid.release()
@@ -380,7 +423,7 @@ class ImageCapture:
         self.negative_effect_is_enabled = False
         self.grey_effect_is_enabled = False
         self.flip_effect_is_enabled = False
-    
+        
     def get_frame(self):
         frame = cv2.imread(self.source)
         if self.face_detection_is_enabled: frame = detect_face(frame)
