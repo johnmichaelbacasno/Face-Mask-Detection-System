@@ -47,9 +47,6 @@ def detect_face(frame):
     img = frame.copy()
     try:
         x, y, w, h = get_detection(frame)
-        crop_img = img[y:y+h, x:x+w]
-        crop_img = cv2.resize(crop_img, (100, 100))
-        crop_img = np.expand_dims(crop_img, axis=0)
         color = (0, 255, 0)
         frame = cv2.rectangle(frame, (x, y), (x+w, y+h), color, 2)
         frame = cv2.putText(frame, 'Face', (x, y-10), cv2.FONT_HERSHEY_SIMPLEX, 0.8, color, 2, cv2.LINE_AA)
@@ -104,6 +101,7 @@ class MenuPage(tk.Frame):
 
         button_back = tk.Button(self, text="Back", command=self.controller.destroy, width=12, fg="#ffffff", bg="#f04747", bd=0, activebackground="#2c2f33", activeforeground="#ffffff", font=("Tw Cen MT", 20, "bold"), relief="flat")
         button_back.pack(pady=20)
+
 class VideoPage(tk.Frame):
     def __init__(self, parent, controller):
         tk.Frame.__init__(self, parent)
@@ -113,6 +111,7 @@ class VideoPage(tk.Frame):
         self.pause = True
         self.delay = 1
         self.filename = None
+        self.video_end = False
 
         #IMAGES
         self.pause_img = ImageTk.PhotoImage(Image.open("assets/images/off.png"))
@@ -165,7 +164,11 @@ class VideoPage(tk.Frame):
                 self.photo = ImageTk.PhotoImage(image=Image.fromarray(frame))
                 self.canvas.create_image(0, 0, image=self.photo, anchor='nw')
             except:
+                # When video ends:
+                # Pause Video
                 self.pause_video()
+                # Stop Recording
+                self.video_end = True
                 self.vid.recording = False
                 self.btn_record.config(text="Record Off")
             if not self.pause:
@@ -191,6 +194,7 @@ class VideoPage(tk.Frame):
     def replay_video(self):
         if self.vid:
             self.vid.refresh()
+            self.video_end = False
             self.btn_pause.config(text="Pause")
             self.resume_video()
     
@@ -206,7 +210,7 @@ class VideoPage(tk.Frame):
             self.resume_video()
     
     def video_record(self):
-        if self.vid:
+        if self.vid and not self.video_end:
             if self.vid.recording:
                 self.vid.recording = False
                 self.btn_record.config(text="Record Off")
