@@ -153,9 +153,9 @@ class VideoPage(tk.Frame):
         self.btn_back.pack(anchor="center")
 
     def take_snapshot(self):
-        if self.vid:
+        if self.vid and not self.video_end:
             frame = self.vid.get_frame()
-            cv2.imwrite("snapshots/frame-" + time.strftime("%Y-%m-%d-%H-%M-%S") + ".jpg", cv2.cvtColor(frame, cv2.COLOR_RGB2BGR))
+            cv2.imwrite(f"snapshots/image-{time.strftime('%Y-%m-%d-%H-%M-%S')}.jpg", cv2.cvtColor(frame, cv2.COLOR_RGB2BGR))
     
     def play_video(self):
         if self.vid:
@@ -294,7 +294,7 @@ class VideoCapture:
     def record_video(self):
         if self.recording:
             fourcc = cv2.VideoWriter_fourcc(*'MP4V')
-            self.out = cv2.VideoWriter('vid_{}.mp4'.format(str(datetime.datetime.now() ).replace(":",'')), fourcc, 20.0, (500, 500))
+            self.out = cv2.VideoWriter(f"recordings/video-{time.strftime('%Y-%m-%d-%H-%M-%S')}.mp4", fourcc, 20.0, (500, 500))
             thread = Thread(target=self.record, args=[self.out,])
             thread.start()
         else:
