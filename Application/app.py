@@ -208,9 +208,6 @@ class VideoPage(tk.Frame):
                 self.loop = True
                 self.btn_loop.config(image=self.loop_on_img)
     
-    def pause_video(self):
-        self.pause = True
-    
     def switch_play(self):
         if self.vid:
             if self.pause:
@@ -219,6 +216,9 @@ class VideoPage(tk.Frame):
             else:
                 self.pause_video()
                 self.btn_pause.config(image=self.play_img)
+    
+    def pause_video(self):
+        self.pause = True
     
     def resume_video(self):
         if self.pause:
@@ -243,6 +243,7 @@ class VideoPage(tk.Frame):
             self.btn_flip.config(text="Flip Off")
             self.resume_video()
     
+    # Video Effects
     def video_record(self):
         if self.vid and not self.video_end:
             if self.vid.recording:
@@ -251,6 +252,7 @@ class VideoPage(tk.Frame):
             else:
                 self.vid.recording = True
                 self.btn_record.config(image=self.record_on_img)
+                self.vid.record_video()
 
     def face_detection_video(self):
         if self.vid:
