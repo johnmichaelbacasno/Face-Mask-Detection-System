@@ -126,6 +126,9 @@ class VideoPage(tk.Frame):
         self.record_off_img = ImageTk.PhotoImage(Image.open("assets/images/record_off.png"))
         self.record_on_img = ImageTk.PhotoImage(Image.open("assets/images/record_on.png"))
 
+        self.open_img = ImageTk.PhotoImage(Image.open("assets/images/open.png"))
+        self.snapshot_img = ImageTk.PhotoImage(Image.open("assets/images/snapshot.png"))
+
         self.canvas = tk.Canvas(self, width=500, height=500)
         self.canvas.pack(anchor="center", padx=20, pady=20)
         self.photo = ImageTk.PhotoImage(Image.open("not_available.jpg"))
@@ -146,11 +149,17 @@ class VideoPage(tk.Frame):
         self.btn_record = tk.Button(self.video_btns, image=self.record_off_img, command=self.video_record, bd=0, background="#23272a", activebackground="#23272a")
         self.btn_record.grid(row=1, column=4, padx=15, pady=15)
 
-        self.btn_open_file = tk.Button(self, text="Open File", width=50, command=self.open_file)
-        self.btn_open_file.pack(anchor="center")
+        self.btn_snapshot = tk.Button(self.video_btns, image=self.snapshot_img, command=self.take_snapshot, bd=0, background="#23272a", activebackground="#23272a")
+        self.btn_snapshot.grid(row=1, column=5, padx=15, pady=15)
 
-        self.btn_snapshot = tk.Button(self, text="Snapshot", width=50, command=self.take_snapshot)
-        self.btn_snapshot.pack(anchor="center")
+        self.btn_open = tk.Button(self.video_btns, image=self.open_img, command=self.open_file, bd=0, background="#23272a", activebackground="#23272a")
+        self.btn_open.grid(row=1, column=6, padx=15, pady=15)
+
+        #self.btn_open_file = tk.Button(self, text="Open File", width=50, command=self.open_file)
+        #self.btn_open_file.pack(anchor="center")
+
+        #self.btn_snapshot = tk.Button(self, text="Snapshot", width=50, command=self.take_snapshot)
+        #self.btn_snapshot.pack(anchor="center")
 
         #self.btn_replay = tk.Button(self, text="Replay", width=50, command=self.replay_video)
         #self.btn_replay.pack(anchor="center")
