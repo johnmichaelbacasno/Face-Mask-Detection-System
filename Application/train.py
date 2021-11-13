@@ -30,7 +30,6 @@ def preprocess():
         print("\n")
 
 preprocess()
-cv2.destroyAllWindows()
 
 # Split data for training and testing
 X_train, X_test, Y_train, Y_test = train_test_split(x, y, test_size=0.20, random_state=42)
@@ -49,11 +48,11 @@ model = Sequential()
 
 model.add(Conv2D(64,(3, 3), input_shape=(IMAGE_SIZE, IMAGE_SIZE, 3)))
 model.add(Activation("relu"))
-model.add(MaxPooling2D(pool_size = (2, 2)))
+model.add(MaxPooling2D(pool_size=(2, 2)))
 
 model.add(Conv2D(256, (3, 3)))
 model.add(Activation("relu"))
-model.add(MaxPooling2D(pool_size = (2, 2)))
+model.add(MaxPooling2D(pool_size=(2, 2)))
 
 model.add(Conv2D(128, (3, 3)))
 model.add(Activation("relu"))
@@ -61,7 +60,7 @@ model.add(Dropout(0.25))
 
 model.add(Conv2D(32, (3, 3)))
 model.add(Activation("relu"))
-model.add(MaxPooling2D(pool_size = (2, 2)))
+model.add(MaxPooling2D(pool_size=(2, 2)))
 
 model.add(Dropout(0.25))
 model.add(Flatten())
@@ -82,7 +81,7 @@ model.fit(X_train, Y_train, batch_size=batch_size, epochs=epochs, validation_spl
 model.save("{}.h5".format(os.path.join(dirname) + "data/models"))
 
 t2 = time.time()
-print("Time taken: ",t2-t1)
+print("Time taken: ", t2-t1)
 
 print("Model evaluation: ")
 validation_loss, validation_accuracy = model.evaluate(X_test, Y_test)
