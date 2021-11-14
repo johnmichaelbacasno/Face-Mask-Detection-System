@@ -14,6 +14,9 @@ face_detection = mp.solutions.face_detection.FaceDetection()
 WHITE = "#FFFFFF"
 BLUE = "#4C9FFC"
 
+class VideoRunOutOfFrame(Exception):
+    pass
+
 def get_detection(frame):
     height, width, channel = frame.shape
     imgRGB = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
@@ -107,6 +110,7 @@ class VideoPage(tk.Frame):
         tk.Frame.__init__(self, parent)
         self.configure(background="#23272a")
 
+        self.video_frame = None
         self.vid = None
         self.pause = True
         self.delay = 1
@@ -115,189 +119,205 @@ class VideoPage(tk.Frame):
         self.loop = False
 
         #IMAGES
-        self.pause_img = ImageTk.PhotoImage(Image.open("assets/images/off.png"))
-        self.play_img = ImageTk.PhotoImage(Image.open("assets/images/on.png"))
+        self.pause_img = ImageTk.PhotoImage(Image.open("assets/images/on.png"))
+        self.play_img = ImageTk.PhotoImage(Image.open("assets/images/off.png"))
 
-        self.loop_off_img = ImageTk.PhotoImage(Image.open("assets/images/loop_off.png"))
-        self.loop_on_img = ImageTk.PhotoImage(Image.open("assets/images/loop_on.png"))
+        self.loop_off_img = ImageTk.PhotoImage(Image.open("assets/images/loop_on.png"))
+        self.loop_on_img = ImageTk.PhotoImage(Image.open("assets/images/loop_off.png"))
 
         self.repeat_img = ImageTk.PhotoImage(Image.open("assets/images/repeat.png"))
 
-        self.record_off_img = ImageTk.PhotoImage(Image.open("assets/images/record_off.png"))
-        self.record_on_img = ImageTk.PhotoImage(Image.open("assets/images/record_on.png"))
+        self.record_off_img = ImageTk.PhotoImage(Image.open("assets/images/record_on.png"))
+        self.record_on_img = ImageTk.PhotoImage(Image.open("assets/images/record_off.png"))
 
         self.open_img = ImageTk.PhotoImage(Image.open("assets/images/open.png"))
         self.snapshot_img = ImageTk.PhotoImage(Image.open("assets/images/snapshot.png"))
+
+        self.image_video_blank = ImageTk.PhotoImage(Image.open("assets/images/video_blank.png"))
 
         self.canvas = tk.Canvas(self, width=500, height=500)
         self.canvas.pack(anchor="center", padx=20, pady=20)
         self.photo = ImageTk.PhotoImage(Image.open("not_available.jpg"))
         self.canvas.create_image(0, 0, image=self.photo, anchor='nw')
 
-        self.video_btns = tk.Frame(self, background="#23272a")
-        self.video_btns.pack()
+        self.video_buttons = tk.Frame(self, background="#23272a")
+        self.video_buttons.pack()
 
-        self.btn_pause = tk.Button(self.video_btns, image=self.pause_img, command=self.switch_play, bd=0, background="#23272a", activebackground="#23272a")
-        self.btn_pause.grid(row=1, column=3, padx=15, pady=15)
+        self.button_pause = tk.Button(self.video_buttons, image=self.pause_img, command=self.switch_play, bd=0, background="#23272a", activebackground="#23272a")
+        self.button_pause.grid(row=1, column=3, padx=15, pady=15)
 
-        self.btn_loop = tk.Button(self.video_btns, image=self.loop_off_img, command=self.switch_loop, bd=0, background="#23272a", activebackground="#23272a")
-        self.btn_loop.grid(row=1, column=2, padx=15, pady=15)
+        self.button_loop = tk.Button(self.video_buttons, image=self.loop_off_img, command=self.switch_loop, bd=0, background="#23272a", activebackground="#23272a")
+        self.button_loop.grid(row=1, column=2, padx=15, pady=15)
 
-        self.btn_repeat = tk.Button(self.video_btns, image=self.repeat_img, command=self.replay_video, bd=0, background="#23272a", activebackground="#23272a")
-        self.btn_repeat.grid(row=1, column=1, padx=15, pady=15)
+        self.button_repeat = tk.Button(self.video_buttons, image=self.repeat_img, command=self.replay_video, bd=0, background="#23272a", activebackground="#23272a")
+        self.button_repeat.grid(row=1, column=1, padx=15, pady=15)
 
-        self.btn_record = tk.Button(self.video_btns, image=self.record_off_img, command=self.video_record, bd=0, background="#23272a", activebackground="#23272a")
-        self.btn_record.grid(row=1, column=4, padx=15, pady=15)
+        self.button_record = tk.Button(self.video_buttons, image=self.record_off_img, command=self.video_record, bd=0, background="#23272a", activebackground="#23272a")
+        self.button_record.grid(row=1, column=4, padx=15, pady=15)
 
-        self.btn_snapshot = tk.Button(self.video_btns, image=self.snapshot_img, command=self.take_snapshot, bd=0, background="#23272a", activebackground="#23272a")
-        self.btn_snapshot.grid(row=1, column=5, padx=15, pady=15)
+        self.button_snapshot = tk.Button(self.video_buttons, image=self.snapshot_img, command=self.take_snapshot, bd=0, background="#23272a", activebackground="#23272a")
+        self.button_snapshot.grid(row=1, column=5, padx=15, pady=15)
 
-        self.btn_open = tk.Button(self.video_btns, image=self.open_img, command=self.open_file, bd=0, background="#23272a", activebackground="#23272a")
-        self.btn_open.grid(row=1, column=6, padx=15, pady=15)
+        self.button_open = tk.Button(self.video_buttons, image=self.open_img, command=self.open_file, bd=0, background="#23272a", activebackground="#23272a")
+        self.button_open.grid(row=1, column=6, padx=15, pady=15)
 
-        #self.btn_open_file = tk.Button(self, text="Open File", width=50, command=self.open_file)
-        #self.btn_open_file.pack(anchor="center")
+        #self.button_open_file = tk.Button(self, text="Open File", width=50, command=self.open_file)
+        #self.button_open_file.pack(anchor="center")
 
-        #self.btn_snapshot = tk.Button(self, text="Snapshot", width=50, command=self.take_snapshot)
-        #self.btn_snapshot.pack(anchor="center")
+        #self.button_snapshot = tk.Button(self, text="Snapshot", width=50, command=self.take_snapshot)
+        #self.button_snapshot.pack(anchor="center")
 
-        #self.btn_replay = tk.Button(self, text="Replay", width=50, command=self.replay_video)
-        #self.btn_replay.pack(anchor="center")
+        #self.button_replay = tk.Button(self, text="Replay", width=50, command=self.replay_video)
+        #self.button_replay.pack(anchor="center")
 
-        #self.btn_record = tk.Button(self, text="Record Off", width=50, command=self.video_record)
-        #self.btn_record.pack(anchor="center")
+        #self.button_record = tk.Button(self, text="Record Off", width=50, command=self.video_record)
+        #self.button_record.pack(anchor="center")
 
-        self.btn_face_detect = tk.Button(self, text="Face Detect Off", width=50, command=self.face_detection_video)
-        self.btn_face_detect.pack(anchor="center")
+        self.button_face_detect = tk.Button(self, text="Face Detect Off", width=50, command=self.face_detection_video)
+        self.button_face_detect.pack(anchor="center")
 
-        self.btn_grey = tk.Button(self, text="Grey Off", width=50, command=self.grey_video)
-        self.btn_grey.pack(anchor="center")
+        self.button_grey = tk.Button(self, text="Grey Off", width=50, command=self.grey_video)
+        self.button_grey.pack(anchor="center")
 
-        self.btn_negative = tk.Button(self, text="Negative Off", width=50, command=self.negative_video)
-        self.btn_negative.pack(anchor="center")
+        self.button_negative = tk.Button(self, text="Negative Off", width=50, command=self.negative_video)
+        self.button_negative.pack(anchor="center")
 
-        self.btn_flip = tk.Button(self, text="Flip Off", width=50, command=self.flip_video)
-        self.btn_flip.pack(anchor="center")
+        self.button_flip = tk.Button(self, text="Flip Off", width=50, command=self.flip_video)
+        self.button_flip.pack(anchor="center")
 
-        self.btn_back = tk.Button(self, text="Back", width=50, command=self.destroy)
-        self.btn_back.pack(anchor="center")
+        self.button_back = tk.Button(self, text="Back", width=50, command=self.destroy)
+        self.button_back.pack(anchor="center")
 
     def take_snapshot(self):
-        if self.vid and not self.video_end:
-            frame = self.vid.get_frame()
-            cv2.imwrite(f"snapshots/image-{time.strftime('%Y-%m-%d-%H-%M-%S')}.jpg", cv2.cvtColor(frame, cv2.COLOR_RGB2BGR))
+        if self.vid:
+            cv2.imwrite(f"snapshots/image-{time.strftime('%Y-%m-%d-%H-%M-%S')}.jpg", cv2.cvtColor(self.video_frame, cv2.COLOR_RGB2BGR))
     
     def play_video(self):
         if self.vid:
-            try:
-                frame = self.vid.get_frame()
-                self.photo = ImageTk.PhotoImage(image=Image.fromarray(frame))
-                self.canvas.create_image(0, 0, image=self.photo, anchor='nw')
-            except:
-                # When video ends:
-                # Pause Video
-                self.pause_video()
-                # Stop Recording
-                self.video_end = True
-                self.vid.recording = False
-                self.btn_record.config(image=self.record_off_img)
-                if self.loop:
-                    self.pause = False
-                    print("hello")
-                    self.replay_video()
             if not self.pause:
+                try:
+                    self.video_frame = self.vid.get_frame()
+                    self.video_image = ImageTk.PhotoImage(image=Image.fromarray(self.video_frame))
+                    self.canvas.create_image(0, 0, image=self.video_image, anchor='nw')
+                except VideoRunOutOfFrame:
+                    if self.loop:
+                        self.replay_video()
+                    else:
+                        self.video_end = True
+                        self.pause_video()
+                    self.end_video_recording()
                 self.after(self.delay, self.play_video)
+            else:
+                if self.video_end:
+                    pass
+                else:
+                    self.canvas.create_image(0, 0, image=self.image_video_blank, anchor='nw')
     
     def switch_loop(self):
         if self.vid:
             if self.loop:
-                self.loop = False
-                self.btn_loop.config(image=self.loop_off_img)
+                self.end_video_loop()
             else:
-                self.loop = True
-                self.btn_loop.config(image=self.loop_on_img)
+                self.start_video_loop()
+    
+    def start_video_loop(self):
+        self.loop = True
+        self.button_loop.config(image=self.loop_on_img)
+
+    def end_video_loop(self):
+        self.loop = False
+        self.button_loop.config(image=self.loop_off_img)
     
     def switch_play(self):
         if self.vid:
             if self.pause:
                 self.resume_video()
-                self.btn_pause.config(image=self.pause_img)
             else:
                 self.pause_video()
-                self.btn_pause.config(image=self.play_img)
     
     def pause_video(self):
         self.pause = True
+        self.button_pause.config(image=self.pause_img)
     
     def resume_video(self):
         if self.pause:
             self.pause = False
+            self.button_pause.config(image=self.play_img)
             self.play_video()
-    
+
     def replay_video(self):
         if self.vid:
             self.vid.refresh()
             self.video_end = False
-            self.btn_pause.config(image=self.pause_img)
             self.resume_video()
-    
+
     def open_file(self):
-        self.pause_video()
+        if self.vid:
+            self.pause_video()
+            self.end_video_recording()
+        
         self.filename = filedialog.askopenfilename(title="Open file", filetypes=(("MP4 files", "*.mp4"), ("WMV files", "*.wmv"), ("AVI files", "*.avi")))
+        
         if self.filename:
             self.vid = VideoCapture(self.filename)
-            self.btn_face_detect.config(text="Face Detect Off")
-            self.btn_grey.config(text="Grey Off")
-            self.btn_negative.config(text="Negative Off")
-            self.btn_flip.config(text="Flip Off")
+            self.button_face_detect.config(text="Face Detect Off")
+            self.button_grey.config(text="Grey Off")
+            self.button_negative.config(text="Negative Off")
+            self.button_flip.config(text="Flip Off")
             self.resume_video()
-    
+
     # Video Effects
     def video_record(self):
         if self.vid and not self.video_end:
             if self.vid.recording:
-                self.vid.recording = False
-                self.btn_record.config(image=self.record_off_img)
+                self.end_video_recording()
             else:
-                self.vid.recording = True
-                self.btn_record.config(image=self.record_on_img)
-                self.vid.record_video()
+                self.start_video_recording()
+    
+    def start_video_recording(self):
+        self.vid.recording = True
+        self.button_record.config(image=self.record_on_img)
+        self.vid.record_video()
+
+    def end_video_recording(self):
+        self.vid.recording = False
+        self.button_record.config(image=self.record_off_img)
 
     def face_detection_video(self):
         if self.vid:
             if self.vid.face_detection_is_enabled:
                 self.vid.face_detection_is_enabled = False
-                self.btn_face_detect.config(text="Face Detect Off")
+                self.button_face_detect.config(text="Face Detect Off")
             else:
                 self.vid.face_detection_is_enabled = True
-                self.btn_face_detect.config(text="Face Detect On")
+                self.button_face_detect.config(text="Face Detect On")
     
     def grey_video(self):
         if self.vid:
             if self.vid.grey_effect_is_enabled:
                 self.vid.grey_effect_is_enabled = False
-                self.btn_grey.config(text="Grey Off")
+                self.button_grey.config(text="Grey Off")
             else:
                 self.vid.grey_effect_is_enabled = True
-                self.btn_grey.config(text="Grey On")
+                self.button_grey.config(text="Grey On")
     
     def negative_video(self):
         if self.vid:
             if self.vid.negative_effect_is_enabled:
                 self.vid.negative_effect_is_enabled = False
-                self.btn_negative.config(text="Negative Off")
+                self.button_negative.config(text="Negative Off")
             else:
                 self.vid.negative_effect_is_enabled = True
-                self.btn_negative.config(text="Negative On")
+                self.button_negative.config(text="Negative On")
     
     def flip_video(self):
         if self.vid:
             if self.vid.flip_effect_is_enabled:
                 self.vid.flip_effect_is_enabled = False
-                self.btn_flip.config(text="Flip Off")
+                self.button_flip.config(text="Flip Off")
             else:
                 self.vid.flip_effect_is_enabled = True
-                self.btn_flip.config(text="Flip On")
+                self.button_flip.config(text="Flip On")
 
 class VideoCapture:
     def __init__(self, source=0):
@@ -320,27 +340,30 @@ class VideoCapture:
 
     def get_frame(self):
         if self.vid.isOpened():
-            _, frame = self.vid.read()
-            if self.face_detection_is_enabled: frame = detect_face(frame)
-            if self.negative_effect_is_enabled:frame = negative(frame)
-            if self.flip_effect_is_enabled: frame = flip(frame)
-            frame = make_square(frame)
-            if self.grey_effect_is_enabled: frame = grey(frame)
-            frame = cv2.resize(frame, (self.width, self.height), interpolation=cv2.INTER_LINEAR)
-            if self.recording:
-                self.record_frame = frame
-                frame = cv2.putText(frame, "Recording...", (10, 50), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 4)
-            return cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+            available, frame = self.vid.read()
+            if available:
+                if self.face_detection_is_enabled: frame = detect_face(frame)
+                if self.negative_effect_is_enabled:frame = negative(frame)
+                if self.flip_effect_is_enabled: frame = flip(frame)
+                frame = make_square(frame)
+                if self.grey_effect_is_enabled: frame = grey(frame)
+                frame = cv2.resize(frame, (self.width, self.height), interpolation=cv2.INTER_LINEAR)
+                if self.recording:
+                    self.record_frame = frame
+                    #frame = cv2.putText(frame, "Recording...", (10, 50), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 4)
+                return cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+            else:
+                raise VideoRunOutOfFrame('No more video frames available.')
     
     def refresh(self):
         self.vid = cv2.VideoCapture(self.source)
     
     def record_video(self):
         if self.recording:
-            fourcc = cv2.VideoWriter_fourcc(*'MP4V')
-            self.out = cv2.VideoWriter(f"recordings/video-{time.strftime('%Y-%m-%d-%H-%M-%S')}.mp4", fourcc, 20.0, (500, 500))
-            thread = Thread(target=self.record, args=[self.out,])
-            thread.start()
+            self.fourcc = cv2.VideoWriter_fourcc(*'MP4V')
+            self.out = cv2.VideoWriter(f"recordings/video-{time.strftime('%Y-%m-%d-%H-%M-%S')}.mp4", self.fourcc, 20.0, (500, 500))
+            self.video_recording_thread = Thread(target=self.record, args=[self.out,])
+            self.video_recording_thread.start()
         else:
             self.out.release()
     
@@ -352,6 +375,7 @@ class VideoCapture:
     def __del__(self):
         if self.vid.isOpened():
             self.vid.release()
+            self.out.release()
 
 class ImagePage(tk.Frame):
     def __init__(self, parent, controller):
@@ -367,29 +391,29 @@ class ImagePage(tk.Frame):
         self.photo = ImageTk.PhotoImage(Image.open("not_available.jpg"))
         self.canvas.create_image(0, 0, image=self.photo, anchor='nw')
 
-        self.btn_snapshot = tk.Button(self, text="Snapshot", width=50, command=self.take_snapshot)
-        self.btn_snapshot.pack(anchor="center")
+        self.button_snapshot = tk.Button(self, text="Snapshot", width=50, command=self.take_snapshot)
+        self.button_snapshot.pack(anchor="center")
 
-        self.btn_restore = tk.Button(self, text="Restore", width=50, command=self.restore_image)
-        self.btn_restore.pack(anchor="center")
+        self.button_restore = tk.Button(self, text="Restore", width=50, command=self.restore_image)
+        self.button_restore.pack(anchor="center")
 
-        self.btn_face_detect = tk.Button(self, text="Face Detect Off", width=50, command=self.face_detection_image)
-        self.btn_face_detect.pack(anchor="center")
+        self.button_face_detect = tk.Button(self, text="Face Detect Off", width=50, command=self.face_detection_image)
+        self.button_face_detect.pack(anchor="center")
 
-        self.btn_grey = tk.Button(self, text="Grey Off", width=50, command=self.grey_image)
-        self.btn_grey.pack(anchor="center")
+        self.button_grey = tk.Button(self, text="Grey Off", width=50, command=self.grey_image)
+        self.button_grey.pack(anchor="center")
 
-        self.btn_negative = tk.Button(self, text="Negative Off", width=50, command=self.negative_image)
-        self.btn_negative.pack(anchor="center")
+        self.button_negative = tk.Button(self, text="Negative Off", width=50, command=self.negative_image)
+        self.button_negative.pack(anchor="center")
 
-        self.btn_flip = tk.Button(self, text="Flip Off", width=50, command=self.flip_image)
-        self.btn_flip.pack(anchor="center")
+        self.button_flip = tk.Button(self, text="Flip Off", width=50, command=self.flip_image)
+        self.button_flip.pack(anchor="center")
 
-        self.btn_open_file = tk.Button(self, text="Open File", width=50, command=self.open_file)
-        self.btn_open_file.pack(anchor="center")
+        self.button_open_file = tk.Button(self, text="Open File", width=50, command=self.open_file)
+        self.button_open_file.pack(anchor="center")
 
-        self.btn_back = tk.Button(self, text="Back", width=50, command=lambda: controller.show_frame(MenuPage))
-        self.btn_back.pack(anchor="center")
+        self.button_back = tk.Button(self, text="Back", width=50, command=lambda: controller.show_frame(MenuPage))
+        self.button_back.pack(anchor="center")
 
     def take_snapshot(self):
         if self.image:
@@ -412,40 +436,40 @@ class ImagePage(tk.Frame):
         if self.image:
             if self.image.face_detection_is_enabled:
                 self.image.face_detection_is_enabled = False
-                self.btn_face_detect.config(text="Face Detect Off")
+                self.button_face_detect.config(text="Face Detect Off")
             else:
                 self.image.face_detection_is_enabled = True
-                self.btn_face_detect.config(text="Face Detect On")
+                self.button_face_detect.config(text="Face Detect On")
             self.display_image()
     
     def grey_image(self):
         if self.image:
             if self.image.grey_effect_is_enabled:
                 self.image.grey_effect_is_enabled = False
-                self.btn_grey.config(text="Grey Off")
+                self.button_grey.config(text="Grey Off")
             else:
                 self.image.grey_effect_is_enabled = True
-                self.btn_grey.config(text="Grey On")
+                self.button_grey.config(text="Grey On")
             self.display_image()
     
     def negative_image(self):
         if self.image:
             if self.image.negative_effect_is_enabled:
                 self.image.negative_effect_is_enabled = False
-                self.btn_negative.config(text="Negative Off")
+                self.button_negative.config(text="Negative Off")
             else:
                 self.image.negative_effect_is_enabled = True
-                self.btn_negative.config(text="Negative On")
+                self.button_negative.config(text="Negative On")
             self.display_image()
     
     def flip_image(self):
         if self.image:
             if self.image.flip_effect_is_enabled:
                 self.image.flip_effect_is_enabled = False
-                self.btn_flip.config(text="Flip Off")
+                self.button_flip.config(text="Flip Off")
             else:
                 self.image.flip_effect_is_enabled = True
-                self.btn_flip.config(text="Flip On")
+                self.button_flip.config(text="Flip On")
             self.display_image()
     
     def restore_image(self):
@@ -454,10 +478,10 @@ class ImagePage(tk.Frame):
         self.image.grey_effect_is_enabled = False
         self.image.flip_effect_is_enabled = False
 
-        self.btn_face_detect.config(text="Face Detect Off")
-        self.btn_grey.config(text="Grey Off")
-        self.btn_negative.config(text="Negative Off")
-        self.btn_flip.config(text="Flip Off")
+        self.button_face_detect.config(text="Face Detect Off")
+        self.button_grey.config(text="Grey Off")
+        self.button_negative.config(text="Negative Off")
+        self.button_flip.config(text="Flip Off")
 
         self.display_image()
 
