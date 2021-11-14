@@ -117,7 +117,7 @@ class VideoPage(tk.Frame):
         self.filename = None
         self.video_end = False
         self.loop = False
-
+        
         #IMAGES
         self.pause_img = ImageTk.PhotoImage(Image.open("assets/images/on.png"))
         self.play_img = ImageTk.PhotoImage(Image.open("assets/images/off.png"))
@@ -161,18 +161,6 @@ class VideoPage(tk.Frame):
         self.button_open = tk.Button(self.video_buttons, image=self.open_img, command=self.open_file, bd=0, background="#23272a", activebackground="#23272a")
         self.button_open.grid(row=1, column=6, padx=15, pady=15)
 
-        #self.button_open_file = tk.Button(self, text="Open File", width=50, command=self.open_file)
-        #self.button_open_file.pack(anchor="center")
-
-        #self.button_snapshot = tk.Button(self, text="Snapshot", width=50, command=self.take_snapshot)
-        #self.button_snapshot.pack(anchor="center")
-
-        #self.button_replay = tk.Button(self, text="Replay", width=50, command=self.replay_video)
-        #self.button_replay.pack(anchor="center")
-
-        #self.button_record = tk.Button(self, text="Record Off", width=50, command=self.video_record)
-        #self.button_record.pack(anchor="center")
-
         self.button_face_detect = tk.Button(self, text="Face Detect Off", width=50, command=self.face_detection_video)
         self.button_face_detect.pack(anchor="center")
 
@@ -187,7 +175,7 @@ class VideoPage(tk.Frame):
 
         self.button_back = tk.Button(self, text="Back", width=50, command=self.destroy)
         self.button_back.pack(anchor="center")
-
+        
     def take_snapshot(self):
         if self.vid:
             cv2.imwrite(f"snapshots/image-{time.strftime('%Y-%m-%d-%H-%M-%S')}.jpg", cv2.cvtColor(self.video_frame, cv2.COLOR_RGB2BGR))
@@ -265,8 +253,7 @@ class VideoPage(tk.Frame):
             self.button_negative.config(text="Negative Off")
             self.button_flip.config(text="Flip Off")
             self.resume_video()
-
-    # Video Effects
+    
     def video_record(self):
         if self.vid and not self.video_end:
             if self.vid.recording:
@@ -282,6 +269,8 @@ class VideoPage(tk.Frame):
     def end_video_recording(self):
         self.vid.recording = False
         self.button_record.config(image=self.record_off_img)
+
+    # Video Effects
 
     def face_detection_video(self):
         if self.vid:
