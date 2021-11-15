@@ -404,7 +404,7 @@ class ImagePage(tk.Frame):
 
         self.button_back = tk.Button(self, text="Back", width=50, command=lambda: controller.show_frame(MenuPage))
         self.button_back.pack(anchor="center")
-
+    
     def take_snapshot(self):
         if self.image:
             frame = self.image.get_frame()
