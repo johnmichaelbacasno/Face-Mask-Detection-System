@@ -120,20 +120,20 @@ class VideoPage(tk.Frame):
         self.video_end = False
         
         # Load Images
+        
+        self.image_video_pause = ImageTk.PhotoImage(Image.open("assets/images/video_pause.png"))
+        self.image_video_play = ImageTk.PhotoImage(Image.open("assets/images/video_play.png"))
 
-        self.image_video_pause = ImageTk.PhotoImage(Image.open("assets/images/on.png"))
-        self.image_video_play = ImageTk.PhotoImage(Image.open("assets/images/off.png"))
-        
-        self.image_video_loop_off = ImageTk.PhotoImage(Image.open("assets/images/loop_on.png"))
-        self.image_video_loop_on = ImageTk.PhotoImage(Image.open("assets/images/loop_off.png"))
+        self.image_video_loop_off = ImageTk.PhotoImage(Image.open("assets/images/video_loop_off.png"))
+        self.image_video_loop_on = ImageTk.PhotoImage(Image.open("assets/images/video_loop_on.png"))
 
-        self.image_video_replay = ImageTk.PhotoImage(Image.open("assets/images/repeat.png"))
+        self.image_video_replay = ImageTk.PhotoImage(Image.open("assets/images/video_replay.png"))
         
-        self.image_video_record_off = ImageTk.PhotoImage(Image.open("assets/images/record_on.png"))
-        self.image_video_record_on = ImageTk.PhotoImage(Image.open("assets/images/record_off.png"))
+        self.image_video_record_off = ImageTk.PhotoImage(Image.open("assets/images/video_record_off.png"))
+        self.image_video_record_on = ImageTk.PhotoImage(Image.open("assets/images/video_record_on.png"))
         
-        self.image_video_open = ImageTk.PhotoImage(Image.open("assets/images/open.png"))
-        self.image_video_snapshot = ImageTk.PhotoImage(Image.open("assets/images/snapshot.png"))
+        self.image_file_open = ImageTk.PhotoImage(Image.open("assets/images/file_open.png"))
+        self.image_video_snapshot = ImageTk.PhotoImage(Image.open("assets/images/video_snapshot.png"))
 
         self.image_video_blank = ImageTk.PhotoImage(Image.open("assets/images/video_blank.png"))
         
@@ -159,7 +159,7 @@ class VideoPage(tk.Frame):
         self.button_snapshot = tk.Button(self.video_buttons, image=self.image_video_snapshot, command=self.take_snapshot, bd=0, background="#23272a", activebackground="#23272a")
         self.button_snapshot.grid(row=1, column=5, padx=15, pady=15)
 
-        self.button_open = tk.Button(self.video_buttons, image=self.image_video_open, command=self.open_file, bd=0, background="#23272a", activebackground="#23272a")
+        self.button_open = tk.Button(self.video_buttons, image=self.image_file_open, command=self.open_file, bd=0, background="#23272a", activebackground="#23272a")
         self.button_open.grid(row=1, column=6, padx=15, pady=15)
 
         self.button_face_detect = tk.Button(self, text="Face Detect Off", width=50, command=self.face_detection_video)
@@ -272,7 +272,7 @@ class VideoPage(tk.Frame):
         self.button_record.config(image=self.image_video_record_off)
 
     # Video Effects
-
+    
     def face_detection_video(self):
         if self.video:
             if self.video.face_detection_is_enabled:
