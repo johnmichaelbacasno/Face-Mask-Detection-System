@@ -8,10 +8,10 @@ from sklearn.model_selection import train_test_split
 from tensorflow.keras.models import Sequential, load_model
 from tensorflow.keras.layers import Conv2D, Dense, MaxPooling2D, Flatten, Activation, Dropout
 
+CURRENT_DIRECTORY_PATH = os.path.dirname(__file__)
+DATA_DIRECTORY_PATH = os.path.join(CURRENT_DIRECTORY_PATH, "data\images")
+CATEGORIES = os.listdir(DATA_DIRECTORY_PATH)
 IMAGE_SIZE = 250
-dirname = os.path.dirname(__file__)
-datadir = os.path.join(dirname, "data\images")
-CATEGORIES = os.listdir(datadir)
 print(f"CATEGORIES: {CATEGORIES}\n")
 
 # Define two empty list to contain image data
@@ -19,14 +19,14 @@ x, y = [], []
 
 def preprocess():
     for category in CATEGORIES:
-        path = os.path.join(datadir, category)
-        classIndex = CATEGORIES.index(category)
+        path = os.path.join(DATA_DIRECTORY_PATH, category)
+        class_index = CATEGORIES.index(category)
         print(f"PATH: {path}")
-        for imgs in tqdm(os.listdir(path)):
-            img_arr = cv2.imread(os.path.join(path, imgs))
-            resized_array = cv2.resize(img_arr, (IMAGE_SIZE, IMAGE_SIZE)) / 255.0
+        for image in tqdm(os.listdir(path)):
+            image_array = cv2.imread(os.path.join(path, image))
+            resized_array = cv2.resize(image_array, (IMAGE_SIZE, IMAGE_SIZE)) / 255.0
             x.append(resized_array)
-            y.append(classIndex)
+            y.append(class_index)
         print("\n")
 
 preprocess()
@@ -65,8 +65,8 @@ model.add(MaxPooling2D(pool_size=(2, 2)))
 model.add(Dropout(0.25))
 model.add(Flatten())
 model.add(Dense(100, activation="relu"))
-model.add(Dense(16, activation="relu"))
 
+model.add(Dense(16, activation="relu"))
 model.add(Dense(len(CATEGORIES)))
 model.add(Activation("softmax"))
 
