@@ -22,7 +22,7 @@ def get_detection(frame):
 
 def detect_mask(frame):
     try:
-        CATEGORIES = ['No Mask', 'Mask']
+        CATEGORIES = ['Mask', 'No Mask']
 
         img = frame.copy()
 
@@ -35,9 +35,9 @@ def detect_mask(frame):
         res = CATEGORIES[index]
 
         if index == 0:
-            color = (0, 0, 255)
-        else:
             color = (0, 255, 0)
+        else:
+            color = (0, 0, 255)
         frame = cv2.rectangle(frame, (x, y), (x + w, y + h), color, 2)
         frame = cv2.putText(frame, f"{res} {prediction[0]}", (x, y - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.8, color, 2, cv2.LINE_AA)
         return frame
