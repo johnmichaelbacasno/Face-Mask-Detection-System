@@ -8,7 +8,13 @@ import numpy as np
 import datetime, time
 import os, sys
 from threading import Thread
+import tensorflow as tf
+from tensorflow.keras.models import load_model
 
+# Load the model
+model = load_model('data\models\model.h5')
+
+# Define mediapipe Face detector
 face_detection = mp.solutions.face_detection.FaceDetection()
 
 WHITE = "#FFFFFF"
