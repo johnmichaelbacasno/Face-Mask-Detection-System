@@ -52,7 +52,7 @@ def make_square(image):
     frame[center_y:height+center_y, center_x:center_x+width] = image
     return frame
 
-cap = cv2.VideoCapture('test.mp4')
+cap = cv2.VideoCapture(0)
 
 while True:
     try: 
@@ -61,7 +61,7 @@ while True:
     except:
         break
     try:
-        CATEGORIES = ['No Mask', 'Mask']
+        CATEGORIES = ['Mask', 'No Mask']
 
         x, y, w, h = get_detection(frame)
         crop_img = img[y:y+h, x:x+w]
@@ -72,9 +72,9 @@ while True:
         res = CATEGORIES[index]
 
         if index == 0:
-            color = (0, 0, 255)
-        else:
             color = (0, 255, 0)
+        else:
+            color = (0, 0, 255)
         frame = cv2.rectangle(frame, (x, y), (x + w, y + h), color, 2)
         frame = cv2.putText(frame, f"{res} {prediction[0]}", (x, y - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.8, color, 2, cv2.LINE_AA)
     except Exception as exception:
