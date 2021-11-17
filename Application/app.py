@@ -38,16 +38,18 @@ def make_square(image):
     return frame
 
 def grey(frame):
-    return cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+    return cv2.cvtColor(cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY), cv2.COLOR_GRAY2BGR)
 
 def negative(frame):
     return cv2.bitwise_not(frame)
 
-def flip(frame):
+def vertical_flip(frame):
+    return cv2.flip(frame, 0)
+
+def horizontal_flip(frame):
     return cv2.flip(frame, 1)
 
 def detect_face(frame):
-    img = frame.copy()
     try:
         x, y, w, h = get_detection(frame)
         color = (0, 255, 0)
@@ -332,12 +334,15 @@ class VideoCapture:
         if self.vid.isOpened():
             available, frame = self.vid.read()
             if available:
+
                 if self.face_detection_is_enabled: frame = detect_face(frame)
+                if self.flip_effect_is_enabled: frame = horizontal_flip(frame)
                 if self.negative_effect_is_enabled:frame = negative(frame)
-                if self.flip_effect_is_enabled: frame = flip(frame)
-                frame = make_square(frame)
                 if self.grey_effect_is_enabled: frame = grey(frame)
+
+                frame = make_square(frame)
                 frame = cv2.resize(frame, (self.width, self.height), interpolation=cv2.INTER_LINEAR)
+                
                 if self.recording:
                     self.record_frame = frame
                     #frame = cv2.putText(frame, "Recording...", (10, 50), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 4)
