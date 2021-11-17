@@ -83,7 +83,7 @@ t1 = time.time()
 
 # Fit the model
 model.fit(X_train, Y_train, batch_size=batch_size, epochs=epochs, validation_split=0.3, verbose=1)
-model.save("{}.h5".format(os.path.join(CURRENT_DIRECTORY_PATH) + "/data/models"))
+model.save("{}.h5".format(os.path.join(CURRENT_DIRECTORY_PATH) + "/data/models/"))
 
 t2 = time.time()
 print("Time taken: ", t2-t1)
