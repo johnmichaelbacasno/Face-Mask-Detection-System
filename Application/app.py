@@ -12,7 +12,7 @@ import tensorflow as tf
 from tensorflow.keras.models import load_model
 
 # Load the model
-model = load_model('data\models\model.h5')
+MASK_DETECTION_MODEL = load_model('data\models\model.h5')
 
 # Define mediapipe Face detector
 face_detection = mp.solutions.face_detection.FaceDetection()
@@ -62,7 +62,31 @@ def detect_face(frame):
         frame = cv2.rectangle(frame, (x, y), (x+w, y+h), color, 2)
         frame = cv2.putText(frame, 'Face', (x, y-10), cv2.FONT_HERSHEY_SIMPLEX, 0.8, color, 2, cv2.LINE_AA)
         return frame
-    except Exception as error:
+    except:
+        return frame
+
+def detect_mask(frame):
+    try:
+        CATEGORIES = ['No Mask', 'Mask']
+
+        img = frame.copy()
+
+        x, y, w, h = get_detection(frame)
+        crop_img = img[y:y+h, x:x+w]
+        crop_img = cv2.resize(crop_img, (250, 250))
+        crop_img = np.expand_dims(crop_img, axis=0)
+        prediction = MASK_DETECTION_MODEL.predict(crop_img)
+        index = np.argmax(prediction)
+        res = CATEGORIES[index]
+
+        if index == 0:
+            color = (0, 0, 255)
+        else:
+            color = (0, 255, 0)
+        frame = cv2.rectangle(frame, (x, y), (x + w, y + h), color, 2)
+        frame = cv2.putText(frame, f"{res} {prediction[0]}", (x, y - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.8, color, 2, cv2.LINE_AA)
+        return frame
+    except:
         return frame
 
 class tkinterApp(tk.Tk):
@@ -172,6 +196,9 @@ class VideoPage(tk.Frame):
 
         self.button_face_detect = tk.Button(self, text="Face Detect Off", width=50, command=self.face_detection_video)
         self.button_face_detect.pack(anchor="center")
+
+        self.button_mask_detect = tk.Button(self, text="Mask Detect Off", width=50, command=self.mask_detection_video)
+        self.button_mask_detect.pack(anchor="center")
 
         self.button_grey = tk.Button(self, text="Grey Off", width=50, command=self.grey_video)
         self.button_grey.pack(anchor="center")
@@ -284,11 +311,34 @@ class VideoPage(tk.Frame):
     def face_detection_video(self):
         if self.video:
             if self.video.face_detection_is_enabled:
-                self.video.face_detection_is_enabled = False
-                self.button_face_detect.config(text="Face Detect Off")
+                self.end_face_detection()
             else:
-                self.video.face_detection_is_enabled = True
-                self.button_face_detect.config(text="Face Detect On")
+                self.end_mask_detection()
+                self.start_face_detection()
+    
+    def start_face_detection(self):
+        self.video.face_detection_is_enabled = True
+        self.button_face_detect.config(text="Face Detect On")
+    
+    def end_face_detection(self):
+        self.video.face_detection_is_enabled = False
+        self.button_face_detect.config(text="Face Detect Off")
+
+    def mask_detection_video(self):
+        if self.video:
+            if self.video.mask_detection_is_enabled:
+                self.end_mask_detection()
+            else:
+                self.end_face_detection()
+                self.start_mask_detection()
+    
+    def start_mask_detection(self):
+        self.video.mask_detection_is_enabled = True
+        self.button_mask_detect.config(text="Mask Detect On")
+    
+    def end_mask_detection(self):
+        self.video.mask_detection_is_enabled = False
+        self.button_mask_detect.config(text="Mask Detect Off")
     
     def grey_video(self):
         if self.video:
@@ -327,8 +377,8 @@ class VideoCapture:
         self.width = 500
         self.height = 500
 
-        #self.switch_detect_mask = False
         self.face_detection_is_enabled = False
+        self.mask_detection_is_enabled = False
         self.negative_effect_is_enabled = False
         self.grey_effect_is_enabled = False
         self.flip_effect_is_enabled = False
@@ -340,11 +390,16 @@ class VideoCapture:
         if self.vid.isOpened():
             available, frame = self.vid.read()
             if available:
-
-                if self.face_detection_is_enabled: frame = detect_face(frame)
-                if self.flip_effect_is_enabled: frame = horizontal_flip(frame)
-                if self.negative_effect_is_enabled:frame = negative(frame)
-                if self.grey_effect_is_enabled: frame = grey(frame)
+                if self.face_detection_is_enabled:
+                    frame = detect_face(frame)
+                if self.mask_detection_is_enabled:
+                    frame = detect_mask(frame)
+                if self.flip_effect_is_enabled:
+                    frame = horizontal_flip(frame)
+                if self.negative_effect_is_enabled:
+                    frame = negative(frame)
+                if self.grey_effect_is_enabled:
+                    frame = grey(frame)
 
                 frame = make_square(frame)
                 frame = cv2.resize(frame, (self.width, self.height), interpolation=cv2.INTER_LINEAR)
@@ -376,7 +431,8 @@ class VideoCapture:
     def __del__(self):
         if self.vid.isOpened():
             self.vid.release()
-            self.out.release()
+            if self.recording:
+                self.out.release()
 
 class ImagePage(tk.Frame):
     def __init__(self, parent, controller):
