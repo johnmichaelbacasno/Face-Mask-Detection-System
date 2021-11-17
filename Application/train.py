@@ -1,4 +1,5 @@
 import os
+from tkinter.constants import E
 import cv2
 import time
 from tqdm import tqdm
@@ -18,15 +19,19 @@ print(f"CATEGORIES: {CATEGORIES}\n")
 x, y = [], []
 
 def preprocess():
+    
     for category in CATEGORIES:
         path = os.path.join(DATA_DIRECTORY_PATH, category)
         class_index = CATEGORIES.index(category)
         print(f"PATH: {path}")
         for image in tqdm(os.listdir(path)):
             image_array = cv2.imread(os.path.join(path, image))
-            resized_array = cv2.resize(image_array, (IMAGE_SIZE, IMAGE_SIZE)) / 255.0
-            x.append(resized_array)
-            y.append(class_index)
+            try:
+                resized_array = cv2.resize(image_array, (IMAGE_SIZE, IMAGE_SIZE)) / 255.0
+                x.append(resized_array)
+                y.append(class_index)
+            except Exception as e:
+                print(e)
         print("\n")
 
 preprocess()
@@ -78,7 +83,7 @@ t1 = time.time()
 
 # Fit the model
 model.fit(X_train, Y_train, batch_size=batch_size, epochs=epochs, validation_split=0.3, verbose=1)
-model.save("{}.h5".format(os.path.join(dirname) + "data/models"))
+model.save("{}.h5".format(os.path.join(CURRENT_DIRECTORY_PATH) + "/data/models"))
 
 t2 = time.time()
 print("Time taken: ", t2-t1)
