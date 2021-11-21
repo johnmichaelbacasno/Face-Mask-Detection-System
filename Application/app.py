@@ -146,13 +146,11 @@ class VideoPage(tk.Frame):
         self.video_frame = None
         self.video_filename = None
         
-        self.pause = True
-        self.loop = False
-        self.delay = 1
+        self.video_pause = True
+        self.video_loop = False
+        self.video_delay = 1
         self.video_end = False
-        
-        # Load Images
-        
+
         self.image_video_pause = ImageTk.PhotoImage(Image.open("assets/images/video_pause.png"))
         self.image_video_play = ImageTk.PhotoImage(Image.open("assets/images/video_play.png"))
 
@@ -218,54 +216,55 @@ class VideoPage(tk.Frame):
     
     def play_video(self):
         if self.video:
-            if not self.pause:
+            if not self.video_pause:
                 try:
                     self.video_frame = self.video.get_frame()
                     self.video_image = ImageTk.PhotoImage(image=Image.fromarray(self.video_frame))
                     self.canvas.create_image(0, 0, image=self.video_image, anchor='nw')
                 except VideoRunOutOfFrame:
-                    if self.loop:
+                    if self.video_loop:
                         self.replay_video()
                     else:
                         self.video_end = True
                         self.pause_video()
                     self.end_video_recording()
-                self.after(self.delay, self.play_video)
+                self.after(self.video_delay, self.play_video)
             else:
                 if self.video_end:
                     pass
                 else:
-                    self.canvas.create_image(0, 0, image=self.image_video_blank, anchor='nw')
+                    #self.canvas.create_image(0, 0, image=self.image_video_blank, anchor='nw')
+                    pass
     
     def switch_loop(self):
         if self.video:
-            if self.loop:
+            if self.video_loop:
                 self.end_video_loop()
             else:
                 self.start_video_loop()
     
     def start_video_loop(self):
-        self.loop = True
+        self.video_loop = True
         self.button_loop.config(image=self.image_video_loop_on)
 
     def end_video_loop(self):
-        self.loop = False
+        self.video_loop = False
         self.button_loop.config(image=self.image_video_loop_off)
     
     def switch_play(self):
         if self.video:
-            if self.pause:
+            if self.video_pause:
                 self.resume_video()
             else:
                 self.pause_video()
     
     def pause_video(self):
-        self.pause = True
+        self.video_pause = True
         self.button_pause.config(image=self.image_video_pause)
     
     def resume_video(self):
-        if self.pause:
-            self.pause = False
+        if self.video_pause:
+            self.video_pause = False
             self.button_pause.config(image=self.image_video_play)
             self.play_video()
 
@@ -557,11 +556,12 @@ class ImageCapture:
         frame = cv2.imread(self.source)
         if self.face_detection_is_enabled: frame = detect_face(frame)
         if self.negative_effect_is_enabled: frame = negative(frame)
-        if self.flip_effect_is_enabled: frame = flip(frame)
+        if self.flip_effect_is_enabled: frame = horizontal_flip(frame)
         frame = make_square(frame)
         if self.grey_effect_is_enabled: frame = grey(frame)
         frame = cv2.resize(frame, (self.width, self.height), interpolation=cv2.INTER_LINEAR)
         return cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
 
-app = tkinterApp()
-app.mainloop()
+if __name__ == "__main__":
+    app = tkinterApp()
+    app.mainloop()
