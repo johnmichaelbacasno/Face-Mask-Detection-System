@@ -174,6 +174,9 @@ class VideoPage(tk.Frame):
         self.video_buttons = tk.Frame(self, background="#23272a")
         self.video_buttons.pack()
 
+        self.video_button_effects = tk.Frame(self, background="#23272a")
+        self.video_button_effects.pack()
+
         self.button_pause = tk.Button(self.video_buttons, image=self.image_video_pause, command=self.switch_play, bd=0, background="#23272a", activebackground="#23272a")
         self.button_pause.grid(row=1, column=3, padx=15, pady=15)
 
@@ -192,23 +195,23 @@ class VideoPage(tk.Frame):
         self.button_open = tk.Button(self.video_buttons, image=self.image_file_open, command=self.open_file, bd=0, background="#23272a", activebackground="#23272a")
         self.button_open.grid(row=1, column=6, padx=15, pady=15)
 
-        self.button_face_detect = tk.Button(self, text="Face Detect Off", width=50, command=self.face_detection_video)
-        self.button_face_detect.pack(anchor="center")
+        self.button_face_detect = tk.Button(self.video_button_effects, text="Face Detect Off", width=15, command=self.face_detection_video)
+        self.button_face_detect.grid(row=1, column=0, padx=15, pady=15)
 
-        self.button_mask_detect = tk.Button(self, text="Mask Detect Off", width=50, command=self.mask_detection_video)
-        self.button_mask_detect.pack(anchor="center")
+        self.button_mask_detect = tk.Button(self.video_button_effects, text="Mask Detect Off", width=15, command=self.mask_detection_video)
+        self.button_mask_detect.grid(row=1, column=1, padx=15, pady=15)
 
-        self.button_grey = tk.Button(self, text="Grey Off", width=50, command=self.grey_video)
-        self.button_grey.pack(anchor="center")
+        self.button_grey = tk.Button(self.video_button_effects, text="Grey Off", width=15, command=self.grey_video)
+        self.button_grey.grid(row=1, column=2, padx=15, pady=15)
 
-        self.button_negative = tk.Button(self, text="Negative Off", width=50, command=self.negative_video)
-        self.button_negative.pack(anchor="center")
+        self.button_negative = tk.Button(self.video_button_effects, text="Negative Off", width=15, command=self.negative_video)
+        self.button_negative.grid(row=1, column=3, padx=15, pady=15)
 
-        self.button_flip = tk.Button(self, text="Flip Off", width=50, command=self.flip_video)
-        self.button_flip.pack(anchor="center")
+        self.button_flip = tk.Button(self.video_button_effects, text="Flip Off", width=15, command=self.flip_video)
+        self.button_flip.grid(row=1, column=4, padx=15, pady=15)
 
-        self.button_back = tk.Button(self, text="Back", width=50, command=self.destroy)
-        self.button_back.pack(anchor="center")
+        self.button_back = tk.Button(self, text="Back", width=15, command=self.destroy)
+        self.button_back.place(bordermode="outside", x=20, y=20)
     
     def take_snapshot(self):
         if self.video:
