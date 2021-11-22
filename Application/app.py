@@ -207,8 +207,11 @@ class VideoPage(tk.Frame):
         self.button_negative = tk.Button(self.video_button_effects, text="Negative Off", width=15, command=self.negative_video)
         self.button_negative.grid(row=1, column=3, padx=15, pady=15)
 
-        self.button_flip = tk.Button(self.video_button_effects, text="Flip Off", width=15, command=self.flip_video)
-        self.button_flip.grid(row=1, column=4, padx=15, pady=15)
+        self.button_horizontal_flip = tk.Button(self.video_button_effects, text="H-Flip Off", width=15, command=self.horizontal_flip_video)
+        self.button_horizontal_flip.grid(row=1, column=4, padx=15, pady=15)
+
+        self.button_vertical_flip = tk.Button(self.video_button_effects, text="V-Flip Off", width=15, command=self.vertical_flip_video)
+        self.button_vertical_flip.grid(row=1, column=5, padx=15, pady=15)
 
         self.button_back = tk.Button(self, text="Back", width=15, command=self.destroy)
         self.button_back.place(bordermode="outside", x=20, y=20)
@@ -287,9 +290,10 @@ class VideoPage(tk.Frame):
         if self.video_filename:
             self.video = VideoCapture(self.video_filename)
             self.button_face_detect.config(text="Face Detect Off")
-            self.button_grey.config(text="Grey Off")
-            self.button_negative.config(text="Negative Off")
-            self.button_flip.config(text="Flip Off")
+            self.end_grey_video()
+            self.end_negative_video()
+            self.end_horizontal_flip_video()
+            self.end_vertical_flip_video()
             self.resume_video()
     
     def video_record(self):
@@ -308,7 +312,7 @@ class VideoPage(tk.Frame):
         self.video.recording = False
         self.button_record.config(image=self.image_video_record_off)
 
-    # Video Effects
+    # Face Detection
     
     def face_detection_video(self):
         if self.video:
@@ -326,6 +330,8 @@ class VideoPage(tk.Frame):
         self.video.face_detection_is_enabled = False
         self.button_face_detect.config(text="Face Detect Off")
 
+    # Mask Detection
+
     def mask_detection_video(self):
         if self.video:
             if self.video.mask_detection_is_enabled:
@@ -342,32 +348,73 @@ class VideoPage(tk.Frame):
         self.video.mask_detection_is_enabled = False
         self.button_mask_detect.config(text="Mask Detect Off")
     
+    # Grey Video Effect
+
     def grey_video(self):
         if self.video:
             if self.video.grey_effect_is_enabled:
-                self.video.grey_effect_is_enabled = False
-                self.button_grey.config(text="Grey Off")
+                self.end_grey_video()
             else:
-                self.video.grey_effect_is_enabled = True
-                self.button_grey.config(text="Grey On")
+                self.start_grey_video()
     
+    def start_grey_video(self):
+        self.video.grey_effect_is_enabled = True
+        self.button_grey.config(text="Grey On")
+    
+    def end_grey_video(self):
+        self.video.grey_effect_is_enabled = False
+        self.button_grey.config(text="Grey Off")
+    
+    # Negative Video Effect
+
     def negative_video(self):
         if self.video:
             if self.video.negative_effect_is_enabled:
-                self.video.negative_effect_is_enabled = False
-                self.button_negative.config(text="Negative Off")
+                self.end_negative_video()
             else:
-                self.video.negative_effect_is_enabled = True
-                self.button_negative.config(text="Negative On")
+                self.start_negative_video()
     
-    def flip_video(self):
+    def start_negative_video(self):
+        self.video.negative_effect_is_enabled = True
+        self.button_negative.config(text="Negative On")
+    
+    def end_negative_video(self):
+        self.video.negative_effect_is_enabled = False
+        self.button_negative.config(text="Negative Off")
+    
+    # Horizontal Flip Video Effect
+    
+    def horizontal_flip_video(self):
         if self.video:
-            if self.video.flip_effect_is_enabled:
-                self.video.flip_effect_is_enabled = False
-                self.button_flip.config(text="Flip Off")
+            if self.video.horizontal_flip_effect_is_enabled:
+                self.end_horizontal_flip_video()
             else:
-                self.video.flip_effect_is_enabled = True
-                self.button_flip.config(text="Flip On")
+                self.start_horizontal_flip_video()
+
+    def start_horizontal_flip_video(self):
+        self.video.horizontal_flip_effect_is_enabled = True
+        self.button_horizontal_flip.config(text="H-Flip On")
+    
+    def end_horizontal_flip_video(self):
+        self.video.horizontal_flip_effect_is_enabled = False
+        self.button_horizontal_flip.config(text="H-Flip Off")
+    
+    # Vetical Flip Video Effect
+    
+    def vertical_flip_video(self):
+        if self.video:
+            if self.video.vertical_flip_effect_is_enabled:
+                self.end_vertical_flip_video()
+            else:
+                self.start_vertical_flip_video()
+    
+    def start_vertical_flip_video(self):
+        self.video.vertical_flip_effect_is_enabled = True
+        self.button_vertical_flip.config(text="V-Flip On")
+    
+    def end_vertical_flip_video(self):
+        self.video.vertical_flip_effect_is_enabled = False
+        self.button_vertical_flip.config(text="V-Flip Off")
 
 class VideoCapture:
     def __init__(self, source=0):
@@ -383,7 +430,8 @@ class VideoCapture:
         self.mask_detection_is_enabled = False
         self.negative_effect_is_enabled = False
         self.grey_effect_is_enabled = False
-        self.flip_effect_is_enabled = False
+        self.horizontal_flip_effect_is_enabled = False
+        self.vertical_flip_effect_is_enabled = False
         self.recording = False
         self.out = None
         self.record_frame = None
@@ -396,12 +444,14 @@ class VideoCapture:
                     frame = detect_face(frame)
                 if self.mask_detection_is_enabled:
                     frame = detect_mask(frame)
-                if self.flip_effect_is_enabled:
-                    frame = horizontal_flip(frame)
-                if self.negative_effect_is_enabled:
-                    frame = negative(frame)
                 if self.grey_effect_is_enabled:
                     frame = grey(frame)
+                if self.negative_effect_is_enabled:
+                    frame = negative(frame)
+                if self.horizontal_flip_effect_is_enabled:
+                    frame = horizontal_flip(frame)
+                if self.vertical_flip_effect_is_enabled:
+                    frame = vertical_flip(frame)
 
                 frame = make_square(frame)
                 frame = cv2.resize(frame, (self.width, self.height), interpolation=cv2.INTER_LINEAR)
@@ -465,8 +515,8 @@ class ImagePage(tk.Frame):
         self.button_negative = tk.Button(self, text="Negative Off", width=50, command=self.negative_image)
         self.button_negative.pack(anchor="center")
 
-        self.button_flip = tk.Button(self, text="Flip Off", width=50, command=self.flip_image)
-        self.button_flip.pack(anchor="center")
+        self.button_horizontal_flip = tk.Button(self, text="Flip Off", width=50, command=self.flip_image)
+        self.button_horizontal_flip.pack(anchor="center")
 
         self.button_open_file = tk.Button(self, text="Open File", width=50, command=self.open_file)
         self.button_open_file.pack(anchor="center")
@@ -523,24 +573,24 @@ class ImagePage(tk.Frame):
     
     def flip_image(self):
         if self.image:
-            if self.image.flip_effect_is_enabled:
-                self.image.flip_effect_is_enabled = False
-                self.button_flip.config(text="Flip Off")
+            if self.image.horizontal_flip_effect_is_enabled:
+                self.image.horizontal_flip_effect_is_enabled = False
+                self.button_horizontal_flip.config(text="Flip Off")
             else:
-                self.image.flip_effect_is_enabled = True
-                self.button_flip.config(text="Flip On")
+                self.image.horizontal_flip_effect_is_enabled = True
+                self.button_horizontal_flip.config(text="Flip On")
             self.display_image()
     
     def restore_image(self):
         self.image.face_detection_is_enabled = False
         self.image.negative_effect_is_enabled = False
         self.image.grey_effect_is_enabled = False
-        self.image.flip_effect_is_enabled = False
+        self.image.horizontal_flip_effect_is_enabled = False
 
         self.button_face_detect.config(text="Face Detect Off")
         self.button_grey.config(text="Grey Off")
         self.button_negative.config(text="Negative Off")
-        self.button_flip.config(text="Flip Off")
+        self.button_horizontal_flip.config(text="Flip Off")
 
         self.display_image()
 
@@ -553,13 +603,13 @@ class ImageCapture:
         self.face_detection_is_enabled = False
         self.negative_effect_is_enabled = False
         self.grey_effect_is_enabled = False
-        self.flip_effect_is_enabled = False
+        self.horizontal_flip_effect_is_enabled = False
         
     def get_frame(self):
         frame = cv2.imread(self.source)
         if self.face_detection_is_enabled: frame = detect_face(frame)
         if self.negative_effect_is_enabled: frame = negative(frame)
-        if self.flip_effect_is_enabled: frame = horizontal_flip(frame)
+        if self.horizontal_flip_effect_is_enabled: frame = horizontal_flip(frame)
         frame = make_square(frame)
         if self.grey_effect_is_enabled: frame = grey(frame)
         frame = cv2.resize(frame, (self.width, self.height), interpolation=cv2.INTER_LINEAR)
