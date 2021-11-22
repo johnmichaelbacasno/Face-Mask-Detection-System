@@ -59,35 +59,33 @@ def detect_face(frame):
     try:
         x, y, w, h = get_detection(frame)
         color = (0, 255, 0)
-        frame = cv2.rectangle(frame, (x, y), (x+w, y+h), color, 2)
-        frame = cv2.putText(frame, 'Face', (x, y-10), cv2.FONT_HERSHEY_SIMPLEX, 0.8, color, 2, cv2.LINE_AA)
-        return frame
+        frame = cv2.rectangle(frame, (x, y), (x + w, y + h), color, 2)
+        frame = cv2.putText(frame, 'Face', (x, y - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.8, color, 2, cv2.LINE_AA)
     except:
-        return frame
+        pass
+    return frame
 
 def detect_mask(frame):
     try:
         CATEGORIES = ['Mask', 'No Mask']
-        
-        img = frame.copy()
+        image_copy = frame.copy()
 
         x, y, w, h = get_detection(frame)
-        crop_img = img[y:y+h, x:x+w]
-        crop_img = cv2.resize(crop_img, (250, 250))
-        crop_img = np.expand_dims(crop_img, axis=0)
-        prediction = MASK_DETECTION_MODEL.predict(crop_img)
+        cropped_image = image_copy[y:y+h, x:x+w]
+        cropped_image = cv2.resize(cropped_image, (250, 250))
+        cropped_image = np.expand_dims(cropped_image, axis=0)
+        prediction = MASK_DETECTION_MODEL.predict(cropped_image)
         index = np.argmax(prediction)
-        res = CATEGORIES[index]
-
-        if index == 0:
-            color = (0, 255, 0)
-        else:
-            color = (0, 0, 255)
+        response = CATEGORIES[index]
+        color =  (0, 255, 0) if index == 0 else (0, 0, 255)
+        
         frame = cv2.rectangle(frame, (x, y), (x + w, y + h), color, 2)
-        frame = cv2.putText(frame, f"{res} {prediction[0]}", (x, y - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.8, color, 2, cv2.LINE_AA)
-        return frame
+        frame = cv2.putText(frame, f"{response} {format(prediction[0][0]*100, '.2f')}%", (x, y - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.8, color, 2, cv2.LINE_AA)
+        
     except:
-        return frame
+        pass
+    
+    return frame
 
 class tkinterApp(tk.Tk):
     def __init__(self, *args, **kwargs):
