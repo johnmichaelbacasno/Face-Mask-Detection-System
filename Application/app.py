@@ -201,11 +201,17 @@ class MenuPage(tk.Frame):
         button_video = tk.Button(self, text="Video", command=lambda: controller.show_frame(VideoPage), width=12, fg="#FFFFFF", bg="#00AAEB", bd=0, activebackground="#15272F", activeforeground="#FFFFFF", font=("Tw Cen MT Condensed", 20, "bold"), relief="raised")
         button_video.pack(pady=20)
         
-        button_camera = tk.Button(self, text="Camera", command=lambda: controller.show_frame(CameraPage), width=12, fg="#FFFFFF", bg="#00AAEB", bd=0, activebackground="#15272F", activeforeground="#FFFFFF", font=("Tw Cen MT Condensed", 20, "bold"), relief="raised")
+        button_camera = tk.Button(self, text="Camera", command=self.browse_camera_page, width=12, fg="#FFFFFF", bg="#00AAEB", bd=0, activebackground="#15272F", activeforeground="#FFFFFF", font=("Tw Cen MT Condensed", 20, "bold"), relief="raised")
         button_camera.pack(pady=20)
 
-        button_quit = tk.Button(self, text="Quit", command=self.controller.destroy, width=12, fg="#FFFFFF", bg="#E62A32", bd=0, activebackground="#15272F", activeforeground="#FFFFFF", font=("Tw Cen MT Condensed", 20, "bold"), relief="raised")
+        button_quit = tk.Button(self, text="Quit", command=lambda: AskQuit(tk.Toplevel(self), self.controller, "Face Mask Detection System"), width=12, fg="#FFFFFF", bg="#E62A32", bd=0, activebackground="#15272F", activeforeground="#FFFFFF", font=("Tw Cen MT Condensed", 20, "bold"), relief="raised")
         button_quit.pack(pady=20)
+
+    def browse_camera_page(self):
+        try:
+            self.controller.show_frame(CameraPage)
+        except ValueError:
+            Warning(tk.Toplevel(self), "Camera Page", "No webcam available.")
 
 class VideoPage(tk.Frame):
     def __init__(self, parent, controller):
@@ -252,9 +258,6 @@ class VideoPage(tk.Frame):
         self.video_buttons = tk.Frame(self, background="#000C18")
         self.video_buttons.pack()
 
-        self.video_button_effects = tk.Frame(self, background="#000C18")
-        self.video_button_effects.pack()
-
         self.button_pause = tk.Button(self.video_buttons, image=self.image_video_pause, command=self.switch_play, bd=0, background="#000C18", activebackground="#000C18")
         self.button_pause.grid(row=1, column=3, padx=15, pady=15)
 
@@ -273,26 +276,29 @@ class VideoPage(tk.Frame):
         self.button_open = tk.Button(self.video_buttons, image=self.image_file_open, command=self.open_file, bd=0, background="#000C18", activebackground="#000C18")
         self.button_open.grid(row=1, column=6, padx=15, pady=15)
 
-        self.button_face_detect = tk.Button(self.video_button_effects, text="Face Detect Off", width=15, command=self.face_detection_video)
+        self.video_button_effects = tk.Frame(self, background="#000C18")
+        self.video_button_effects.pack()
+
+        self.button_face_detect = tk.Button(self.video_button_effects, text="Face Detect", command=self.face_detection_video, width=15, fg="#151515", bg="#FFFFFF", bd=0, activebackground="#15272F", activeforeground="#FFFFFF", font=("Tw Cen MT Condensed", 12), relief="raised")
         self.button_face_detect.grid(row=1, column=0, padx=15, pady=15)
 
-        self.button_mask_detect = tk.Button(self.video_button_effects, text="Mask Detect Off", width=15, command=self.mask_detection_video)
+        self.button_mask_detect = tk.Button(self.video_button_effects, text="Mask Detect", command=self.mask_detection_video, width=15, fg="#151515", bg="#FFFFFF", bd=0, activebackground="#15272F", activeforeground="#FFFFFF", font=("Tw Cen MT Condensed", 12), relief="raised")
         self.button_mask_detect.grid(row=1, column=1, padx=15, pady=15)
 
-        self.button_grey = tk.Button(self.video_button_effects, text="Grey Off", width=15, command=self.grey_video)
+        self.button_grey = tk.Button(self.video_button_effects, text="Grey", command=self.grey_video, width=15, fg="#151515", bg="#FFFFFF", bd=0, activebackground="#15272F", activeforeground="#FFFFFF", font=("Tw Cen MT Condensed", 12), relief="raised")
         self.button_grey.grid(row=1, column=2, padx=15, pady=15)
 
-        self.button_negative = tk.Button(self.video_button_effects, text="Negative Off", width=15, command=self.negative_video)
+        self.button_negative = tk.Button(self.video_button_effects, text="Negative", command=self.negative_video, width=15, fg="#151515", bg="#FFFFFF", bd=0, activebackground="#15272F", activeforeground="#FFFFFF", font=("Tw Cen MT Condensed", 12), relief="raised")
         self.button_negative.grid(row=1, column=3, padx=15, pady=15)
 
-        self.button_horizontal_flip = tk.Button(self.video_button_effects, text="H-Flip Off", width=15, command=self.horizontal_flip_video)
+        self.button_horizontal_flip = tk.Button(self.video_button_effects, text="H-Flip", command=self.horizontal_flip_video, width=15, fg="#151515", bg="#FFFFFF", bd=0, activebackground="#15272F", activeforeground="#FFFFFF", font=("Tw Cen MT Condensed", 12), relief="raised")
         self.button_horizontal_flip.grid(row=1, column=4, padx=15, pady=15)
 
-        self.button_vertical_flip = tk.Button(self.video_button_effects, text="V-Flip Off", width=15, command=self.vertical_flip_video)
+        self.button_vertical_flip = tk.Button(self.video_button_effects, text="V-Flip", command=self.vertical_flip_video, width=15, fg="#151515", bg="#FFFFFF", bd=0, activebackground="#15272F", activeforeground="#FFFFFF", font=("Tw Cen MT Condensed", 12), relief="raised")
         self.button_vertical_flip.grid(row=1, column=5, padx=15, pady=15)
 
-        self.button_back = tk.Button(self, text="Back", width=15, command=self.end_page)
-        self.button_back.place(bordermode="outside", x=20, y=20)
+        self.button_back = tk.Button(self, text="Back", command=self.end_page, width=12, fg="#FFFFFF", bg="#E62A32", bd=0, activebackground="#15272F", activeforeground="#FFFFFF", font=("Tw Cen MT Condensed", 12, "bold"), relief="raised")
+        self.button_back.place(bordermode="outside", x=35, y=20)
 
         self.info_labels()
 
@@ -439,11 +445,11 @@ class VideoPage(tk.Frame):
     
     def start_face_detection(self):
         self.video.face_detection_is_enabled = True
-        self.button_face_detect.config(text="Face Detect On")
+        self.button_face_detect.config(fg="#FFFFFF", bg="#00AAEB")
     
     def end_face_detection(self):
         self.video.face_detection_is_enabled = False
-        self.button_face_detect.config(text="Face Detect Off")
+        self.button_face_detect.config(fg="#151515", bg="#FFFFFF")
 
     # Mask Detection
 
@@ -457,11 +463,11 @@ class VideoPage(tk.Frame):
     
     def start_mask_detection(self):
         self.video.mask_detection_is_enabled = True
-        self.button_mask_detect.config(text="Mask Detect On")
+        self.button_mask_detect.config(fg="#FFFFFF", bg="#00AAEB")
     
     def end_mask_detection(self):
         self.video.mask_detection_is_enabled = False
-        self.button_mask_detect.config(text="Mask Detect Off")
+        self.button_mask_detect.config(fg="#151515", bg="#FFFFFF")
     
     # Grey Video Effect
 
@@ -474,11 +480,11 @@ class VideoPage(tk.Frame):
     
     def start_grey_video(self):
         self.video.grey_effect_is_enabled = True
-        self.button_grey.config(text="Grey On")
+        self.button_grey.config(fg="#FFFFFF", bg="#00AAEB")
     
     def end_grey_video(self):
         self.video.grey_effect_is_enabled = False
-        self.button_grey.config(text="Grey Off")
+        self.button_grey.config(fg="#151515", bg="#FFFFFF")
     
     # Negative Video Effect
 
@@ -491,11 +497,11 @@ class VideoPage(tk.Frame):
     
     def start_negative_video(self):
         self.video.negative_effect_is_enabled = True
-        self.button_negative.config(text="Negative On")
+        self.button_negative.config(fg="#FFFFFF", bg="#00AAEB")
     
     def end_negative_video(self):
         self.video.negative_effect_is_enabled = False
-        self.button_negative.config(text="Negative Off")
+        self.button_negative.config(fg="#151515", bg="#FFFFFF")
     
     # Horizontal Flip Video Effect
     
@@ -508,11 +514,11 @@ class VideoPage(tk.Frame):
 
     def start_horizontal_flip_video(self):
         self.video.horizontal_flip_effect_is_enabled = True
-        self.button_horizontal_flip.config(text="H-Flip On")
+        self.button_horizontal_flip.config(fg="#FFFFFF", bg="#00AAEB")
     
     def end_horizontal_flip_video(self):
         self.video.horizontal_flip_effect_is_enabled = False
-        self.button_horizontal_flip.config(text="H-Flip Off")
+        self.button_horizontal_flip.config(fg="#151515", bg="#FFFFFF")
     
     # Vetical Flip Video Effect
     
@@ -525,11 +531,11 @@ class VideoPage(tk.Frame):
     
     def start_vertical_flip_video(self):
         self.video.vertical_flip_effect_is_enabled = True
-        self.button_vertical_flip.config(text="V-Flip On")
+        self.button_vertical_flip.config(fg="#FFFFFF", bg="#00AAEB")
     
     def end_vertical_flip_video(self):
         self.video.vertical_flip_effect_is_enabled = False
-        self.button_vertical_flip.config(text="V-Flip Off")
+        self.button_vertical_flip.config(fg="#151515", bg="#FFFFFF")
 
 class VideoCapture:
     def __init__(self, source=0):
@@ -633,26 +639,26 @@ class ImagePage(tk.Frame):
         self.image_button_effects = tk.Frame(self, background="#000C18")
         self.image_button_effects.pack()
 
-        self.button_face_detect = tk.Button(self.image_button_effects, text="Face Detect Off", width=15, command=self.face_detection_image)
+        self.button_face_detect = tk.Button(self.image_button_effects, text="Face Detect", command=self.face_detection_image, width=15, fg="#151515", bg="#FFFFFF", bd=0, activebackground="#15272F", activeforeground="#FFFFFF", font=("Tw Cen MT Condensed", 12), relief="raised")
         self.button_face_detect.grid(row=1, column=0, padx=15, pady=15)
 
-        self.button_mask_detect = tk.Button(self.image_button_effects, text="Mask Detect Off", width=15, command=self.mask_detection_image)
+        self.button_mask_detect = tk.Button(self.image_button_effects, text="Mask Detect", command=self.mask_detection_image, width=15, fg="#151515", bg="#FFFFFF", bd=0, activebackground="#15272F", activeforeground="#FFFFFF", font=("Tw Cen MT Condensed", 12), relief="raised")
         self.button_mask_detect.grid(row=1, column=1, padx=15, pady=15)
 
-        self.button_grey = tk.Button(self.image_button_effects, text="Grey Off", width=15, command=self.grey_image)
+        self.button_grey = tk.Button(self.image_button_effects, text="Grey", command=self.grey_image, width=15, fg="#151515", bg="#FFFFFF", bd=0, activebackground="#15272F", activeforeground="#FFFFFF", font=("Tw Cen MT Condensed", 12), relief="raised")
         self.button_grey.grid(row=1, column=2, padx=15, pady=15)
 
-        self.button_negative = tk.Button(self.image_button_effects, text="Negative Off", width=15, command=self.negative_image)
+        self.button_negative = tk.Button(self.image_button_effects, text="Negative", command=self.negative_image, width=15, fg="#151515", bg="#FFFFFF", bd=0, activebackground="#15272F", activeforeground="#FFFFFF", font=("Tw Cen MT Condensed", 12), relief="raised")
         self.button_negative.grid(row=1, column=3, padx=15, pady=15)
 
-        self.button_horizontal_flip = tk.Button(self.image_button_effects, text="H-Flip Off", width=15, command=self.horizontal_flip_image)
+        self.button_horizontal_flip = tk.Button(self.image_button_effects, text="H-Flip", command=self.horizontal_flip_image, width=15, fg="#151515", bg="#FFFFFF", bd=0, activebackground="#15272F", activeforeground="#FFFFFF", font=("Tw Cen MT Condensed", 12), relief="raised")
         self.button_horizontal_flip.grid(row=1, column=4, padx=15, pady=15)
 
-        self.button_vertical_flip = tk.Button(self.image_button_effects, text="V-Flip Off", width=15, command=self.vertical_flip_image)
+        self.button_vertical_flip = tk.Button(self.image_button_effects, text="V-Flip", command=self.vertical_flip_image, width=15, fg="#151515", bg="#FFFFFF", bd=0, activebackground="#15272F", activeforeground="#FFFFFF", font=("Tw Cen MT Condensed", 12), relief="raised")
         self.button_vertical_flip.grid(row=1, column=5, padx=15, pady=15)
 
-        self.button_back = tk.Button(self, text="Back", width=15, command=self.end_page)
-        self.button_back.place(bordermode="outside", x=20, y=20)
+        self.button_back = tk.Button(self, text="Back", command=self.end_page, width=12, fg="#FFFFFF", bg="#E62A32", bd=0, activebackground="#15272F", activeforeground="#FFFFFF", font=("Tw Cen MT Condensed", 12, "bold"), relief="raised")
+        self.button_back.place(bordermode="outside", x=35, y=20)
 
     def end_page(self):
         self.destroy()
@@ -687,11 +693,11 @@ class ImagePage(tk.Frame):
     
     def start_face_detection(self):
         self.image.face_detection_is_enabled = True
-        self.button_face_detect.config(text="Face Detect On")
+        self.button_face_detect.config(fg="#FFFFFF", bg="#00AAEB")
     
     def end_face_detection(self):
         self.image.face_detection_is_enabled = False
-        self.button_face_detect.config(text="Face Detect Off")
+        self.button_face_detect.config(fg="#151515", bg="#FFFFFF")
 
     # Mask Detection
 
@@ -706,11 +712,11 @@ class ImagePage(tk.Frame):
     
     def start_mask_detection(self):
         self.image.mask_detection_is_enabled = True
-        self.button_mask_detect.config(text="Mask Detect On")
+        self.button_mask_detect.config(fg="#FFFFFF", bg="#00AAEB")
     
     def end_mask_detection(self):
         self.image.mask_detection_is_enabled = False
-        self.button_mask_detect.config(text="Mask Detect Off")
+        self.button_mask_detect.config(fg="#151515", bg="#FFFFFF")
     
     # Grey Image Effect
 
@@ -724,11 +730,11 @@ class ImagePage(tk.Frame):
     
     def start_grey_image(self):
         self.image.grey_effect_is_enabled = True
-        self.button_grey.config(text="Grey On")
+        self.button_grey.config(fg="#FFFFFF", bg="#00AAEB")
     
     def end_grey_image(self):
         self.image.grey_effect_is_enabled = False
-        self.button_grey.config(text="Grey Off")
+        self.button_grey.config(fg="#151515", bg="#FFFFFF")
     
     # Negative Image Effect
 
@@ -742,11 +748,11 @@ class ImagePage(tk.Frame):
     
     def start_negative_image(self):
         self.image.negative_effect_is_enabled = True
-        self.button_negative.config(text="Negative On")
+        self.button_negative.config(fg="#FFFFFF", bg="#00AAEB")
     
     def end_negative_image(self):
         self.image.negative_effect_is_enabled = False
-        self.button_negative.config(text="Negative Off")
+        self.button_negative.config(fg="#151515", bg="#FFFFFF")
     
     # Horizontal Flip Image Effect
     
@@ -760,11 +766,11 @@ class ImagePage(tk.Frame):
 
     def start_horizontal_flip_image(self):
         self.image.horizontal_flip_effect_is_enabled = True
-        self.button_horizontal_flip.config(text="H-Flip On")
+        self.button_horizontal_flip.config(fg="#FFFFFF", bg="#00AAEB")
     
     def end_horizontal_flip_image(self):
         self.image.horizontal_flip_effect_is_enabled = False
-        self.button_horizontal_flip.config(text="H-Flip Off")
+        self.button_horizontal_flip.config(fg="#151515", bg="#FFFFFF")
     
     # Vetical Flip Image Effect
     
@@ -778,11 +784,11 @@ class ImagePage(tk.Frame):
     
     def start_vertical_flip_image(self):
         self.image.vertical_flip_effect_is_enabled = True
-        self.button_vertical_flip.config(text="V-Flip On")
+        self.button_vertical_flip.config(fg="#FFFFFF", bg="#00AAEB")
     
     def end_vertical_flip_image(self):
         self.image.vertical_flip_effect_is_enabled = False
-        self.button_vertical_flip.config(text="V-Flip Off")
+        self.button_vertical_flip.config(fg="#151515", bg="#FFFFFF")
     
     def restore_image(self):
         self.end_face_detection()
@@ -862,9 +868,6 @@ class CameraPage(tk.Frame):
         self.video_buttons = tk.Frame(self, background="#000C18")
         self.video_buttons.pack()
 
-        self.video_button_effects = tk.Frame(self, background="#000C18")
-        self.video_button_effects.pack()
-
         self.button_pause = tk.Button(self.video_buttons, image=self.image_video_pause, command=self.switch_play, bd=0, background="#000C18", activebackground="#000C18")
         self.button_pause.grid(row=1, column=3, padx=15, pady=15)
 
@@ -874,26 +877,29 @@ class CameraPage(tk.Frame):
         self.button_snapshot = tk.Button(self.video_buttons, image=self.image_video_snapshot, command=self.take_snapshot, bd=0, background="#000C18", activebackground="#000C18")
         self.button_snapshot.grid(row=1, column=5, padx=15, pady=15)
 
-        self.button_face_detect = tk.Button(self.video_button_effects, text="Face Detect Off", width=15, command=self.face_detection_video)
+        self.video_button_effects = tk.Frame(self, background="#000C18")
+        self.video_button_effects.pack()
+
+        self.button_face_detect = tk.Button(self.video_button_effects, text="Face Detect", command=self.face_detection_video, width=15, fg="#151515", bg="#FFFFFF", bd=0, activebackground="#15272F", activeforeground="#FFFFFF", font=("Tw Cen MT Condensed", 12), relief="raised")
         self.button_face_detect.grid(row=1, column=0, padx=15, pady=15)
 
-        self.button_mask_detect = tk.Button(self.video_button_effects, text="Mask Detect Off", width=15, command=self.mask_detection_video)
+        self.button_mask_detect = tk.Button(self.video_button_effects, text="Mask Detect", command=self.mask_detection_video, width=15, fg="#151515", bg="#FFFFFF", bd=0, activebackground="#15272F", activeforeground="#FFFFFF", font=("Tw Cen MT Condensed", 12), relief="raised")
         self.button_mask_detect.grid(row=1, column=1, padx=15, pady=15)
 
-        self.button_grey = tk.Button(self.video_button_effects, text="Grey Off", width=15, command=self.grey_video)
+        self.button_grey = tk.Button(self.video_button_effects, text="Grey", command=self.grey_video, width=15, fg="#151515", bg="#FFFFFF", bd=0, activebackground="#15272F", activeforeground="#FFFFFF", font=("Tw Cen MT Condensed", 12), relief="raised")
         self.button_grey.grid(row=1, column=2, padx=15, pady=15)
 
-        self.button_negative = tk.Button(self.video_button_effects, text="Negative Off", width=15, command=self.negative_video)
+        self.button_negative = tk.Button(self.video_button_effects, text="Negative", command=self.negative_video, width=15, fg="#151515", bg="#FFFFFF", bd=0, activebackground="#15272F", activeforeground="#FFFFFF", font=("Tw Cen MT Condensed", 12), relief="raised")
         self.button_negative.grid(row=1, column=3, padx=15, pady=15)
 
-        self.button_horizontal_flip = tk.Button(self.video_button_effects, text="H-Flip Off", width=15, command=self.horizontal_flip_video)
+        self.button_horizontal_flip = tk.Button(self.video_button_effects, text="H-Flip", command=self.horizontal_flip_video, width=15, fg="#151515", bg="#FFFFFF", bd=0, activebackground="#15272F", activeforeground="#FFFFFF", font=("Tw Cen MT Condensed", 12), relief="raised")
         self.button_horizontal_flip.grid(row=1, column=4, padx=15, pady=15)
 
-        self.button_vertical_flip = tk.Button(self.video_button_effects, text="V-Flip Off", width=15, command=self.vertical_flip_video)
+        self.button_vertical_flip = tk.Button(self.video_button_effects, text="V-Flip", command=self.vertical_flip_video, width=15, fg="#151515", bg="#FFFFFF", bd=0, activebackground="#15272F", activeforeground="#FFFFFF", font=("Tw Cen MT Condensed", 12), relief="raised")
         self.button_vertical_flip.grid(row=1, column=5, padx=15, pady=15)
 
-        self.button_back = tk.Button(self, text="Back", width=15, command=self.end_page)
-        self.button_back.place(bordermode="outside", x=20, y=20)
+        self.button_back = tk.Button(self, text="Back", command=self.end_page, width=12, fg="#FFFFFF", bg="#E62A32", bd=0, activebackground="#15272F", activeforeground="#FFFFFF", font=("Tw Cen MT Condensed", 12, "bold"), relief="raised")
+        self.button_back.place(bordermode="outside", x=35, y=20)
 
         self.info_labels()
 
@@ -962,7 +968,7 @@ class CameraPage(tk.Frame):
             self.play_video()
     
     def video_record(self):
-        if self.video and not self.video_end:
+        if self.video and not self.video_pause and not self.video_end:
             if self.video.recording:
                 self.end_video_recording()
             else:
@@ -977,7 +983,7 @@ class CameraPage(tk.Frame):
         self.video.recording = False
         self.button_record.config(image=self.image_video_record_off)
 
-    # Face Detection
+   # Face Detection
     
     def face_detection_video(self):
         if self.video:
@@ -989,11 +995,11 @@ class CameraPage(tk.Frame):
     
     def start_face_detection(self):
         self.video.face_detection_is_enabled = True
-        self.button_face_detect.config(text="Face Detect On")
+        self.button_face_detect.config(fg="#FFFFFF", bg="#00AAEB")
     
     def end_face_detection(self):
         self.video.face_detection_is_enabled = False
-        self.button_face_detect.config(text="Face Detect Off")
+        self.button_face_detect.config(fg="#151515", bg="#FFFFFF")
 
     # Mask Detection
 
@@ -1007,11 +1013,11 @@ class CameraPage(tk.Frame):
     
     def start_mask_detection(self):
         self.video.mask_detection_is_enabled = True
-        self.button_mask_detect.config(text="Mask Detect On")
+        self.button_mask_detect.config(fg="#FFFFFF", bg="#00AAEB")
     
     def end_mask_detection(self):
         self.video.mask_detection_is_enabled = False
-        self.button_mask_detect.config(text="Mask Detect Off")
+        self.button_mask_detect.config(fg="#151515", bg="#FFFFFF")
     
     # Grey Video Effect
 
@@ -1024,11 +1030,11 @@ class CameraPage(tk.Frame):
     
     def start_grey_video(self):
         self.video.grey_effect_is_enabled = True
-        self.button_grey.config(text="Grey On")
+        self.button_grey.config(fg="#FFFFFF", bg="#00AAEB")
     
     def end_grey_video(self):
         self.video.grey_effect_is_enabled = False
-        self.button_grey.config(text="Grey Off")
+        self.button_grey.config(fg="#151515", bg="#FFFFFF")
     
     # Negative Video Effect
 
@@ -1041,11 +1047,11 @@ class CameraPage(tk.Frame):
     
     def start_negative_video(self):
         self.video.negative_effect_is_enabled = True
-        self.button_negative.config(text="Negative On")
+        self.button_negative.config(fg="#FFFFFF", bg="#00AAEB")
     
     def end_negative_video(self):
         self.video.negative_effect_is_enabled = False
-        self.button_negative.config(text="Negative Off")
+        self.button_negative.config(fg="#151515", bg="#FFFFFF")
     
     # Horizontal Flip Video Effect
     
@@ -1058,11 +1064,11 @@ class CameraPage(tk.Frame):
 
     def start_horizontal_flip_video(self):
         self.video.horizontal_flip_effect_is_enabled = True
-        self.button_horizontal_flip.config(text="H-Flip On")
+        self.button_horizontal_flip.config(fg="#FFFFFF", bg="#00AAEB")
     
     def end_horizontal_flip_video(self):
         self.video.horizontal_flip_effect_is_enabled = False
-        self.button_horizontal_flip.config(text="H-Flip Off")
+        self.button_horizontal_flip.config(fg="#151515", bg="#FFFFFF")
     
     # Vetical Flip Video Effect
     
@@ -1075,11 +1081,68 @@ class CameraPage(tk.Frame):
     
     def start_vertical_flip_video(self):
         self.video.vertical_flip_effect_is_enabled = True
-        self.button_vertical_flip.config(text="V-Flip On")
+        self.button_vertical_flip.config(fg="#FFFFFF", bg="#00AAEB")
     
     def end_vertical_flip_video(self):
         self.video.vertical_flip_effect_is_enabled = False
-        self.button_vertical_flip.config(text="V-Flip Off")
+        self.button_vertical_flip.config(fg="#151515", bg="#FFFFFF")
+
+
+class Warning:
+    def __init__(self, root, title, message):
+        self.root = root
+        self.root.title(title)
+        self.root.geometry("450x325")
+        self.root.resizable(width=False, height=False)
+        self.root.configure(background="#23272a")
+
+        frame_main = tk.Frame(self.root, background="#23272a")
+        frame_main.pack(pady=20)
+
+        label_warning_icon = tk.Label(frame_main, text="⚠", font=("UD Digi Kyokasho NK-B", 50), bg="#23272a", fg="#f04747")
+        label_warning_icon.pack(padx=20, pady=10)
+
+        label_message = tk.Label(frame_main, text=message, font=("UD Digi Kyokasho NK-B", 16), bg="#23272a", fg="#ffffff")
+        label_message.pack(padx=20, pady=15)
+
+        frame_button = tk.Frame(self.root, background="#23272a")
+        frame_button.pack(pady=20)
+
+        button_quit = tk.Button(frame_button, text="OK", command=self.root.destroy, height=1, width=8, fg="#ffffff", bg="#f04747", bd=0, activebackground="#2c2f33", activeforeground="#ffffff", font=("Tw Cen MT", 20, "bold"), relief="flat")
+        button_quit.pack()
+
+class AskQuit:
+    def __init__(self, root, controller, title):
+        self.root = root
+        self.root.title(title)
+        self.root.geometry("450x325")
+        self.root.resizable(width=False, height=False)
+        self.root.configure(background="#23272a")
+        self.controller = controller
+
+        frame_main = tk.Frame(self.root, background="#23272a")
+        frame_main.pack(pady=20)
+
+        label_warning_icon = tk.Label(frame_main, text="✋", font=("UD Digi Kyokasho NK-B", 50), bg="#23272a", fg="#f04747")
+        label_warning_icon.pack(padx=20, pady=10)
+
+        label_message = tk.Label(frame_main, text="Are you sure you want to quit?", font=("UD Digi Kyokasho NK-B", 16), bg="#23272a", fg="#ffffff")
+        label_message.pack(padx=20, pady=15)
+
+        frame_button = tk.Frame(self.root, background="#23272a")
+        frame_button.pack(pady=20)
+
+        button_yes = tk.Button(frame_button, text="Yes", command=self.yes, height=1, width=8, fg="#ffffff", bg="#f04747", bd=0, activebackground="#2c2f33", activeforeground="#ffffff", font=("Tw Cen MT", 20, "bold"), relief="flat")
+        button_yes.grid(row=0, column=0, padx=20)
+
+        button_no = tk.Button(frame_button, text="No", command=self.no, height=1, width=8, fg="#ffffff", bg="#04c360", bd=0, activebackground="#2c2f33", activeforeground="#ffffff", font=("Tw Cen MT", 20, "bold"), relief="flat")
+        button_no.grid(row=0, column=1, padx=20)
+
+    def yes(self):
+        self.controller.destroy()
+    
+    def no(self):
+        self.root.destroy()
 
 if __name__ == "__main__":
     app = tkinterApp()
