@@ -93,7 +93,7 @@ classifier = cv2.CascadeClassifier('data/models/haarcascade_frontalface_default.
 size = 7
 
 face_detected_count = 0
-mask_detected_count = 0
+masked_detected_count = 0
 umasked_detected_count = 0
 
 def get_detection(frame):
@@ -119,7 +119,7 @@ def detect_face(frame):
     return frame
 
 def detect_mask(frame):
-    global size, face_detected_count, mask_detected_count, umasked_detected_count
+    global size, face_detected_count, masked_detected_count, umasked_detected_count
     try:
         CATEGORIES = ['Mask', 'No Mask']
         image_copy = frame.copy()
@@ -143,13 +143,14 @@ def detect_mask(frame):
             else:
                 color = (0, 0, 255)
                 unmasked_count += 1
-
+            
             frame = cv2.rectangle(frame, (x, y), (x + w, y + h), color, 2)
             frame = cv2.putText(frame, f"{response} {format(prediction[0][0]*100, '.2f')}%", (x, y - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.8, color, 2, cv2.LINE_AA)
 
             faces_count += 1
+        
         face_detected_count = faces_count
-        mask_detected_count = mask_count
+        masked_detected_count = mask_count
         umasked_detected_count = unmasked_count
     
     except:
@@ -281,8 +282,33 @@ class VideoPage(tk.Frame):
         self.button_vertical_flip = tk.Button(self.video_button_effects, text="V-Flip Off", width=15, command=self.vertical_flip_video)
         self.button_vertical_flip.grid(row=1, column=5, padx=15, pady=15)
 
-        self.button_back = tk.Button(self, text="Back", width=15, command=self.destroy)
+        self.button_back = tk.Button(self, text="Back", width=15, command=self.end_page)
         self.button_back.place(bordermode="outside", x=20, y=20)
+
+        self.info_labels()
+
+    def info_labels(self):
+        self.info = tk.Frame(self, background="#23272a")
+        self.info.place(bordermode="outside", x=800, y=20)
+
+        self.face_detected = tk.Label(self.info, text=f"Face Detected: {face_detected_count}",  font=("Segoe UI Black", 10), bg="#23272a", fg="#ffffff")
+        self.face_detected.grid(row=0, column=0, padx=15, pady=15, sticky="W")
+        
+        self.masked_detected = tk.Label(self.info, text=f"Masked Detected: {masked_detected_count}", font=("Segoe UI Black", 10), bg="#23272a", fg="#ffffff")
+        self.masked_detected.grid(row=1, column=0, padx=15, pady=15, sticky="W")
+
+        self.unmasked_detected = tk.Label(self.info, text=f"Unmasked Detected: {umasked_detected_count}", font=("Segoe UI Black", 10), bg="#23272a", fg="#ffffff")
+        self.unmasked_detected.grid(row=2, column=0, padx=15, pady=15, sticky="W")
+
+    def reset_count(self):
+        global face_detected_count, masked_detected_count, umasked_detected_count
+        face_detected_count = 0
+        masked_detected_count = 0
+        umasked_detected_count = 0
+    
+    def end_page(self):
+        self.reset_count()
+        self.destroy()
     
     def take_snapshot(self):
         if self.video:
@@ -290,6 +316,7 @@ class VideoPage(tk.Frame):
     
     def play_video(self):
         if self.video:
+            self.info_labels()
             if not self.video_pause:
                 try:
                     self.video_frame = self.video.get_frame()
@@ -357,7 +384,9 @@ class VideoPage(tk.Frame):
         
         if self.video_filename:
             self.video = VideoCapture(self.video_filename)
-            self.button_face_detect.config(text="Face Detect Off")
+            self.reset_count()
+            self.end_face_detection()
+            self.end_mask_detection()
             self.end_grey_video()
             self.end_negative_video()
             self.end_horizontal_flip_video()
@@ -553,6 +582,7 @@ class VideoCapture:
             self.vid.release()
             if self.recording:
                 self.out.release()
+        
 
 class ImagePage(tk.Frame):
     def __init__(self, parent, controller):
