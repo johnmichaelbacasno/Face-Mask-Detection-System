@@ -591,37 +591,54 @@ class ImagePage(tk.Frame):
         self.configure(background="#23272a")
 
         self.image = None
-        self.delay = 1
-        self.video_filename = None
 
+        self.image_video_replay = ImageTk.PhotoImage(Image.open("assets/images/video_replay.png"))
+        self.image_video_snapshot = ImageTk.PhotoImage(Image.open("assets/images/video_snapshot.png"))
+        self.image_file_open = ImageTk.PhotoImage(Image.open("assets/images/file_open.png"))
+        self.image_video_blank = ImageTk.PhotoImage(Image.open("assets/images/video_blank.png"))
+        
         self.canvas = tk.Canvas(self, width=500, height=500)
-        self.canvas.pack(anchor="center")
-        self.photo = ImageTk.PhotoImage(Image.open("not_available.jpg"))
-        self.canvas.create_image(0, 0, image=self.photo, anchor='nw')
+        self.canvas.pack(anchor="center", padx=20, pady=20)
+        self.canvas.create_image(0, 0, image=self.image_video_blank, anchor='nw')
+        
+        self.image_buttons = tk.Frame(self, background="#23272a")
+        self.image_buttons.pack()
 
-        self.button_snapshot = tk.Button(self, text="Snapshot", width=50, command=self.take_snapshot)
-        self.button_snapshot.pack(anchor="center")
+        self.button_repeat = tk.Button(self.image_buttons, image=self.image_video_replay, command=self.restore_image, bd=0, background="#23272a", activebackground="#23272a")
+        self.button_repeat.grid(row=1, column=1, padx=15, pady=15)
 
-        self.button_restore = tk.Button(self, text="Restore", width=50, command=self.restore_image)
-        self.button_restore.pack(anchor="center")
+        self.button_snapshot = tk.Button(self.image_buttons, image=self.image_video_snapshot, command=self.take_snapshot, bd=0, background="#23272a", activebackground="#23272a")
+        self.button_snapshot.grid(row=1, column=5, padx=15, pady=15)
 
-        self.button_face_detect = tk.Button(self, text="Face Detect Off", width=50, command=self.face_detection_image)
-        self.button_face_detect.pack(anchor="center")
+        self.button_open = tk.Button(self.image_buttons, image=self.image_file_open, command=self.open_file, bd=0, background="#23272a", activebackground="#23272a")
+        self.button_open.grid(row=1, column=6, padx=15, pady=15)
+        
+        self.image_button_effects = tk.Frame(self, background="#23272a")
+        self.image_button_effects.pack()
 
-        self.button_grey = tk.Button(self, text="Grey Off", width=50, command=self.grey_image)
-        self.button_grey.pack(anchor="center")
+        self.button_face_detect = tk.Button(self.image_button_effects, text="Face Detect Off", width=15, command=self.face_detection_image)
+        self.button_face_detect.grid(row=1, column=0, padx=15, pady=15)
 
-        self.button_negative = tk.Button(self, text="Negative Off", width=50, command=self.negative_image)
-        self.button_negative.pack(anchor="center")
+        self.button_mask_detect = tk.Button(self.image_button_effects, text="Mask Detect Off", width=15, command=self.mask_detection_image)
+        self.button_mask_detect.grid(row=1, column=1, padx=15, pady=15)
 
-        self.button_horizontal_flip = tk.Button(self, text="Flip Off", width=50, command=self.flip_image)
-        self.button_horizontal_flip.pack(anchor="center")
+        self.button_grey = tk.Button(self.image_button_effects, text="Grey Off", width=15, command=self.grey_image)
+        self.button_grey.grid(row=1, column=2, padx=15, pady=15)
 
-        self.button_open_file = tk.Button(self, text="Open File", width=50, command=self.open_file)
-        self.button_open_file.pack(anchor="center")
+        self.button_negative = tk.Button(self.image_button_effects, text="Negative Off", width=15, command=self.negative_image)
+        self.button_negative.grid(row=1, column=3, padx=15, pady=15)
 
-        self.button_back = tk.Button(self, text="Back", width=50, command=lambda: controller.show_frame(MenuPage))
-        self.button_back.pack(anchor="center")
+        self.button_horizontal_flip = tk.Button(self.image_button_effects, text="H-Flip Off", width=15, command=self.horizontal_flip_image)
+        self.button_horizontal_flip.grid(row=1, column=4, padx=15, pady=15)
+
+        self.button_vertical_flip = tk.Button(self.image_button_effects, text="V-Flip Off", width=15, command=self.vertical_flip_image)
+        self.button_vertical_flip.grid(row=1, column=5, padx=15, pady=15)
+
+        self.button_back = tk.Button(self, text="Back", width=15, command=self.end_page)
+        self.button_back.place(bordermode="outside", x=20, y=20)
+
+    def end_page(self):
+        self.destroy()
     
     def take_snapshot(self):
         if self.image:
@@ -635,61 +652,128 @@ class ImagePage(tk.Frame):
             self.canvas.create_image(0, 0, image=self.photo, anchor='nw')
     
     def open_file(self):
-        self.video_filename = filedialog.askopenfilename(title="Open file", filetypes=(("JPG files", "*.jpg"), ("PNG files", "*.png")))
-        if self.video_filename:
-            self.image = ImageCapture(self.video_filename)
+        self.image_filename = filedialog.askopenfilename(title="Open file", filetypes=(("JPG files", "*.jpg"), ("PNG files", "*.png")))
+        if self.image_filename:
+            self.image = ImageCapture(self.image_filename)
             self.restore_image()
 
+    # Face Detection
+    
     def face_detection_image(self):
         if self.image:
             if self.image.face_detection_is_enabled:
-                self.image.face_detection_is_enabled = False
-                self.button_face_detect.config(text="Face Detect Off")
+                self.end_face_detection()
             else:
-                self.image.face_detection_is_enabled = True
-                self.button_face_detect.config(text="Face Detect On")
-            self.display_image()
+                self.end_mask_detection()
+                self.start_face_detection()
+        self.display_image()
     
+    def start_face_detection(self):
+        self.image.face_detection_is_enabled = True
+        self.button_face_detect.config(text="Face Detect On")
+    
+    def end_face_detection(self):
+        self.image.face_detection_is_enabled = False
+        self.button_face_detect.config(text="Face Detect Off")
+
+    # Mask Detection
+
+    def mask_detection_image(self):
+        if self.image:
+            if self.image.mask_detection_is_enabled:
+                self.end_mask_detection()
+            else:
+                self.end_face_detection()
+                self.start_mask_detection()
+        self.display_image()
+    
+    def start_mask_detection(self):
+        self.image.mask_detection_is_enabled = True
+        self.button_mask_detect.config(text="Mask Detect On")
+    
+    def end_mask_detection(self):
+        self.image.mask_detection_is_enabled = False
+        self.button_mask_detect.config(text="Mask Detect Off")
+    
+    # Grey Image Effect
+
     def grey_image(self):
         if self.image:
             if self.image.grey_effect_is_enabled:
-                self.image.grey_effect_is_enabled = False
-                self.button_grey.config(text="Grey Off")
+                self.end_grey_image()
             else:
-                self.image.grey_effect_is_enabled = True
-                self.button_grey.config(text="Grey On")
-            self.display_image()
+                self.start_grey_image()
+        self.display_image()
     
+    def start_grey_image(self):
+        self.image.grey_effect_is_enabled = True
+        self.button_grey.config(text="Grey On")
+    
+    def end_grey_image(self):
+        self.image.grey_effect_is_enabled = False
+        self.button_grey.config(text="Grey Off")
+    
+    # Negative Image Effect
+
     def negative_image(self):
         if self.image:
             if self.image.negative_effect_is_enabled:
-                self.image.negative_effect_is_enabled = False
-                self.button_negative.config(text="Negative Off")
+                self.end_negative_image()
             else:
-                self.image.negative_effect_is_enabled = True
-                self.button_negative.config(text="Negative On")
-            self.display_image()
+                self.start_negative_image()
+        self.display_image()
     
-    def flip_image(self):
+    def start_negative_image(self):
+        self.image.negative_effect_is_enabled = True
+        self.button_negative.config(text="Negative On")
+    
+    def end_negative_image(self):
+        self.image.negative_effect_is_enabled = False
+        self.button_negative.config(text="Negative Off")
+    
+    # Horizontal Flip Image Effect
+    
+    def horizontal_flip_image(self):
         if self.image:
             if self.image.horizontal_flip_effect_is_enabled:
-                self.image.horizontal_flip_effect_is_enabled = False
-                self.button_horizontal_flip.config(text="Flip Off")
+                self.end_horizontal_flip_image()
             else:
-                self.image.horizontal_flip_effect_is_enabled = True
-                self.button_horizontal_flip.config(text="Flip On")
-            self.display_image()
+                self.start_horizontal_flip_image()
+        self.display_image()
+
+    def start_horizontal_flip_image(self):
+        self.image.horizontal_flip_effect_is_enabled = True
+        self.button_horizontal_flip.config(text="H-Flip On")
+    
+    def end_horizontal_flip_image(self):
+        self.image.horizontal_flip_effect_is_enabled = False
+        self.button_horizontal_flip.config(text="H-Flip Off")
+    
+    # Vetical Flip Image Effect
+    
+    def vertical_flip_image(self):
+        if self.image:
+            if self.image.vertical_flip_effect_is_enabled:
+                self.end_vertical_flip_image()
+            else:
+                self.start_vertical_flip_image()
+        self.display_image()
+    
+    def start_vertical_flip_image(self):
+        self.image.vertical_flip_effect_is_enabled = True
+        self.button_vertical_flip.config(text="V-Flip On")
+    
+    def end_vertical_flip_image(self):
+        self.image.vertical_flip_effect_is_enabled = False
+        self.button_vertical_flip.config(text="V-Flip Off")
     
     def restore_image(self):
-        self.image.face_detection_is_enabled = False
-        self.image.negative_effect_is_enabled = False
-        self.image.grey_effect_is_enabled = False
-        self.image.horizontal_flip_effect_is_enabled = False
-
-        self.button_face_detect.config(text="Face Detect Off")
-        self.button_grey.config(text="Grey Off")
-        self.button_negative.config(text="Negative Off")
-        self.button_horizontal_flip.config(text="Flip Off")
+        self.end_face_detection()
+        self.end_mask_detection()
+        self.end_grey_image()
+        self.end_negative_image()
+        self.end_horizontal_flip_image()
+        self.end_vertical_flip_image()
 
         self.display_image()
 
@@ -700,18 +784,30 @@ class ImageCapture:
         self.height = 500
 
         self.face_detection_is_enabled = False
+        self.mask_detection_is_enabled = False
         self.negative_effect_is_enabled = False
         self.grey_effect_is_enabled = False
         self.horizontal_flip_effect_is_enabled = False
+        self.vertical_flip_effect_is_enabled = False
         
     def get_frame(self):
         frame = cv2.imread(self.source)
-        if self.face_detection_is_enabled: frame = detect_face(frame)
-        if self.negative_effect_is_enabled: frame = negative(frame)
-        if self.horizontal_flip_effect_is_enabled: frame = horizontal_flip(frame)
+        if self.face_detection_is_enabled:
+            frame = detect_face(frame)
+        if self.mask_detection_is_enabled:
+            frame = detect_mask(frame)
+        if self.grey_effect_is_enabled:
+            frame = grey(frame)
+        if self.negative_effect_is_enabled:
+            frame = negative(frame)
+        if self.horizontal_flip_effect_is_enabled:
+            frame = horizontal_flip(frame)
+        if self.vertical_flip_effect_is_enabled:
+            frame = vertical_flip(frame)
+
         frame = make_square(frame)
-        if self.grey_effect_is_enabled: frame = grey(frame)
         frame = cv2.resize(frame, (self.width, self.height), interpolation=cv2.INTER_LINEAR)
+
         return cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
 
 class CameraPage(tk.Frame):
