@@ -110,7 +110,7 @@ def detect_face(frame):
         for coor in get_detection(image_copy):
             x, y, w, h = (value * size for value in coor)
             color = (0, 255, 0)
-            frame = cv2.rectangle(image_copy, (x, y) ,(x + w, y + h), color, 2)
+            frame = cv2.rectangle(image_copy, (x, y) ,(x + w, y + h), color, 3)
             frame = cv2.putText(image_copy, 'Face', (x, y - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.8, color, 2,cv2.LINE_AA)
             faces_count += 1
         face_detected_count = faces_count
@@ -145,7 +145,7 @@ def detect_mask(frame):
                 color = (0, 0, 255)
                 unmasked_count += 1
             
-            frame = cv2.rectangle(frame, (x, y), (x + w, y + h), color, 2)
+            frame = cv2.rectangle(frame, (x, y), (x + w, y + h), color, 3)
             frame = cv2.putText(frame, f"{response} {format(prediction[0][0]*100, '.2f')}%", (x, y - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.8, color, 2, cv2.LINE_AA)
 
             faces_count += 1
@@ -176,12 +176,12 @@ class tkinterApp(tk.Tk):
         self.show_frame(MenuPage)
 
     def show_frame(self, page, *args):
-        """
+        '''
         frame = page(self.container, self, *args)
         self.frames[page] = frame
         frame.grid(row=0, column=0, sticky="nsew")
         self.frames[page].tkraise()
-        """
+        '''
         frame = page(self.container, self, *args)
         frame.grid(row=0, column=0, sticky="nsew")
         frame.tkraise()
@@ -192,20 +192,20 @@ class MenuPage(tk.Frame):
         self.configure(background="#000C18")
         self.controller = controller
 
-        label_header = tk.Label(self, text="Choose\nInput Type", font=("Segoe UI Black", 50), bg="#000C18", fg="#ffffff")
+        label_header = tk.Label(self, text="Choose\nInput Type", font=("Tw Cen MT", 60, "bold"), bg="#000C18", fg="#FFFFFF")
         label_header.pack(pady=50)
 
-        button_choice = tk.Button(self, text="Image", command=lambda: controller.show_frame(ImagePage), width=12, fg="#ffffff", bg="#00AAEB", bd=0, activebackground="#2c2f33", activeforeground="#ffffff", font=("Tw Cen MT", 20, "bold"), relief="flat")
-        button_choice.pack(pady=20)
+        button_image = tk.Button(self, text="Image", command=lambda: controller.show_frame(ImagePage), width=12, fg="#FFFFFF", bg="#00AAEB", bd=0, activebackground="#15272F", activeforeground="#FFFFFF", font=("Tw Cen MT Condensed", 20, "bold"), relief="raised")
+        button_image.pack(pady=20)
         
-        button_voiced = tk.Button(self, text="Video", command=lambda: controller.show_frame(VideoPage), width=12, fg="#ffffff", bg="#00AAEB", bd=0, activebackground="#2c2f33", activeforeground="#ffffff", font=("Tw Cen MT", 20, "bold"), relief="flat")
-        button_voiced.pack(pady=20)
+        button_video = tk.Button(self, text="Video", command=lambda: controller.show_frame(VideoPage), width=12, fg="#FFFFFF", bg="#00AAEB", bd=0, activebackground="#15272F", activeforeground="#FFFFFF", font=("Tw Cen MT Condensed", 20, "bold"), relief="raised")
+        button_video.pack(pady=20)
         
-        button_typing = tk.Button(self, text="Camera", command=lambda: controller.show_frame(CameraPage), width=12, fg="#ffffff", bg="#00AAEB", bd=0, activebackground="#2c2f33", activeforeground="#ffffff", font=("Tw Cen MT", 20, "bold"), relief="flat")
-        button_typing.pack(pady=20)
+        button_camera = tk.Button(self, text="Camera", command=lambda: controller.show_frame(CameraPage), width=12, fg="#FFFFFF", bg="#00AAEB", bd=0, activebackground="#15272F", activeforeground="#FFFFFF", font=("Tw Cen MT Condensed", 20, "bold"), relief="raised")
+        button_camera.pack(pady=20)
 
-        button_back = tk.Button(self, text="Quit", command=self.controller.destroy, width=12, fg="#ffffff", bg="#E62A32", bd=0, activebackground="#2c2f33", activeforeground="#ffffff", font=("Tw Cen MT", 20, "bold"), relief="flat")
-        button_back.pack(pady=20)
+        button_quit = tk.Button(self, text="Quit", command=self.controller.destroy, width=12, fg="#FFFFFF", bg="#E62A32", bd=0, activebackground="#15272F", activeforeground="#FFFFFF", font=("Tw Cen MT Condensed", 20, "bold"), relief="raised")
+        button_quit.pack(pady=20)
 
 class VideoPage(tk.Frame):
     def __init__(self, parent, controller):
@@ -237,9 +237,17 @@ class VideoPage(tk.Frame):
 
         self.image_video_blank = ImageTk.PhotoImage(Image.open("assets/images/video_blank.png"))
         
-        self.canvas = tk.Canvas(self, width=500, height=500)
+        
+        self.canvas = tk.Canvas(self, width=498, height=498)
         self.canvas.pack(anchor="center", padx=20, pady=20)
         self.canvas.create_image(0, 0, image=self.image_video_blank, anchor='nw')
+        
+        
+        '''
+        self.canvas = tk.Label(self, width=500, height=500)
+        self.canvas.pack(anchor="center", padx=20, pady=20)
+        self.canvas.configure(image=self.image_video_blank, anchor='nw')
+        '''
 
         self.video_buttons = tk.Frame(self, background="#000C18")
         self.video_buttons.pack()
@@ -292,13 +300,13 @@ class VideoPage(tk.Frame):
         self.info = tk.Frame(self, background="#000C18")
         self.info.place(bordermode="outside", x=800, y=20)
 
-        self.face_detected = tk.Label(self.info, text=f"Face Detected: {face_detected_count}",  font=("Segoe UI Black", 10), bg="#000C18", fg="#ffffff")
+        self.face_detected = tk.Label(self.info, text=f"Face Detected: {face_detected_count}",  font=("Segoe UI Black", 10), bg="#000C18", fg="#FFFFFF")
         self.face_detected.grid(row=0, column=0, padx=15, pady=15, sticky="W")
         
-        self.masked_detected = tk.Label(self.info, text=f"Masked Detected: {masked_detected_count}", font=("Segoe UI Black", 10), bg="#000C18", fg="#ffffff")
+        self.masked_detected = tk.Label(self.info, text=f"Masked Detected: {masked_detected_count}", font=("Segoe UI Black", 10), bg="#000C18", fg="#FFFFFF")
         self.masked_detected.grid(row=1, column=0, padx=15, pady=15, sticky="W")
 
-        self.unmasked_detected = tk.Label(self.info, text=f"Unmasked Detected: {umasked_detected_count}", font=("Segoe UI Black", 10), bg="#000C18", fg="#ffffff")
+        self.unmasked_detected = tk.Label(self.info, text=f"Unmasked Detected: {umasked_detected_count}", font=("Segoe UI Black", 10), bg="#000C18", fg="#FFFFFF")
         self.unmasked_detected.grid(row=2, column=0, padx=15, pady=15, sticky="W")
     
     def reset_count(self):
@@ -320,9 +328,18 @@ class VideoPage(tk.Frame):
             self.info_labels()
             if not self.video_pause:
                 try:
+                    
                     self.video_frame = self.video.get_frame()
                     self.video_image = ImageTk.PhotoImage(image=Image.fromarray(self.video_frame))
                     self.canvas.create_image(0, 0, image=self.video_image, anchor='nw')
+                    
+                    
+                    '''
+                    self.video_frame = self.video.get_frame()
+                    self.video_image = ImageTk.PhotoImage(image=Image.fromarray(self.video_frame))
+                    self.canvas.configure(image=self.video_image, anchor='nw')
+                    '''
+
                 except VideoRunOutOfFrame:
                     if self.video_loop:
                         self.replay_video()
@@ -597,7 +614,7 @@ class ImagePage(tk.Frame):
         self.image_file_open = ImageTk.PhotoImage(Image.open("assets/images/file_open.png"))
         self.image_video_blank = ImageTk.PhotoImage(Image.open("assets/images/video_blank.png"))
         
-        self.canvas = tk.Canvas(self, width=500, height=500)
+        self.canvas = tk.Canvas(self, width=498, height=498)
         self.canvas.pack(anchor="center", padx=20, pady=20)
         self.canvas.create_image(0, 0, image=self.image_video_blank, anchor='nw')
         
@@ -838,7 +855,7 @@ class CameraPage(tk.Frame):
 
         self.image_video_blank = ImageTk.PhotoImage(Image.open("assets/images/video_blank.png"))
         
-        self.canvas = tk.Canvas(self, width=500, height=500)
+        self.canvas = tk.Canvas(self, width=498, height=498)
         self.canvas.pack(anchor="center", padx=20, pady=20)
         self.canvas.create_image(0, 0, image=self.image_video_blank, anchor='nw')
 
@@ -884,13 +901,13 @@ class CameraPage(tk.Frame):
         self.info = tk.Frame(self, background="#000C18")
         self.info.place(bordermode="outside", x=800, y=20)
 
-        self.face_detected = tk.Label(self.info, text=f"Face Detected: {face_detected_count}",  font=("Segoe UI Black", 10), bg="#000C18", fg="#ffffff")
+        self.face_detected = tk.Label(self.info, text=f"Face Detected: {face_detected_count}",  font=("Segoe UI Black", 10), bg="#000C18", fg="#FFFFFF")
         self.face_detected.grid(row=0, column=0, padx=15, pady=15, sticky="W")
         
-        self.masked_detected = tk.Label(self.info, text=f"Masked Detected: {masked_detected_count}", font=("Segoe UI Black", 10), bg="#000C18", fg="#ffffff")
+        self.masked_detected = tk.Label(self.info, text=f"Masked Detected: {masked_detected_count}", font=("Segoe UI Black", 10), bg="#000C18", fg="#FFFFFF")
         self.masked_detected.grid(row=1, column=0, padx=15, pady=15, sticky="W")
 
-        self.unmasked_detected = tk.Label(self.info, text=f"Unmasked Detected: {umasked_detected_count}", font=("Segoe UI Black", 10), bg="#000C18", fg="#ffffff")
+        self.unmasked_detected = tk.Label(self.info, text=f"Unmasked Detected: {umasked_detected_count}", font=("Segoe UI Black", 10), bg="#000C18", fg="#FFFFFF")
         self.unmasked_detected.grid(row=2, column=0, padx=15, pady=15, sticky="W")
     
     def reset_count(self):
