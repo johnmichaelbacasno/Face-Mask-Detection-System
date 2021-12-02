@@ -189,28 +189,28 @@ class tkinterApp(tk.Tk):
 class MenuPage(tk.Frame):
     def __init__(self, parent, controller):
         tk.Frame.__init__(self, parent)
-        self.configure(background="#23272a")
+        self.configure(background="#000C18")
         self.controller = controller
 
-        label_header = tk.Label(self, text="Choose\nInput Type", font=("Segoe UI Black", 50), bg="#23272a", fg="#ffffff")
+        label_header = tk.Label(self, text="Choose\nInput Type", font=("Segoe UI Black", 50), bg="#000C18", fg="#ffffff")
         label_header.pack(pady=50)
 
-        button_choice = tk.Button(self, text="Image", command=lambda: controller.show_frame(ImagePage), width=12, fg="#ffffff", bg="#4C9FFC", bd=0, activebackground="#2c2f33", activeforeground="#ffffff", font=("Tw Cen MT", 20, "bold"), relief="flat")
+        button_choice = tk.Button(self, text="Image", command=lambda: controller.show_frame(ImagePage), width=12, fg="#ffffff", bg="#00AAEB", bd=0, activebackground="#2c2f33", activeforeground="#ffffff", font=("Tw Cen MT", 20, "bold"), relief="flat")
         button_choice.pack(pady=20)
         
-        button_voiced = tk.Button(self, text="Video", command=lambda: controller.show_frame(VideoPage), width=12, fg="#ffffff", bg="#4C9FFC", bd=0, activebackground="#2c2f33", activeforeground="#ffffff", font=("Tw Cen MT", 20, "bold"), relief="flat")
+        button_voiced = tk.Button(self, text="Video", command=lambda: controller.show_frame(VideoPage), width=12, fg="#ffffff", bg="#00AAEB", bd=0, activebackground="#2c2f33", activeforeground="#ffffff", font=("Tw Cen MT", 20, "bold"), relief="flat")
         button_voiced.pack(pady=20)
         
-        button_typing = tk.Button(self, text="Camera", command=lambda: controller.show_frame(CameraPage), width=12, fg="#ffffff", bg="#4C9FFC", bd=0, activebackground="#2c2f33", activeforeground="#ffffff", font=("Tw Cen MT", 20, "bold"), relief="flat")
+        button_typing = tk.Button(self, text="Camera", command=lambda: controller.show_frame(CameraPage), width=12, fg="#ffffff", bg="#00AAEB", bd=0, activebackground="#2c2f33", activeforeground="#ffffff", font=("Tw Cen MT", 20, "bold"), relief="flat")
         button_typing.pack(pady=20)
 
-        button_back = tk.Button(self, text="Quit", command=self.controller.destroy, width=12, fg="#ffffff", bg="#BC6161", bd=0, activebackground="#2c2f33", activeforeground="#ffffff", font=("Tw Cen MT", 20, "bold"), relief="flat")
+        button_back = tk.Button(self, text="Quit", command=self.controller.destroy, width=12, fg="#ffffff", bg="#E62A32", bd=0, activebackground="#2c2f33", activeforeground="#ffffff", font=("Tw Cen MT", 20, "bold"), relief="flat")
         button_back.pack(pady=20)
 
 class VideoPage(tk.Frame):
     def __init__(self, parent, controller):
         tk.Frame.__init__(self, parent)
-        self.configure(background="#23272a")
+        self.configure(background="#000C18")
         
         self.video = None
         self.video_frame = None
@@ -241,28 +241,28 @@ class VideoPage(tk.Frame):
         self.canvas.pack(anchor="center", padx=20, pady=20)
         self.canvas.create_image(0, 0, image=self.image_video_blank, anchor='nw')
 
-        self.video_buttons = tk.Frame(self, background="#23272a")
+        self.video_buttons = tk.Frame(self, background="#000C18")
         self.video_buttons.pack()
 
-        self.video_button_effects = tk.Frame(self, background="#23272a")
+        self.video_button_effects = tk.Frame(self, background="#000C18")
         self.video_button_effects.pack()
 
-        self.button_pause = tk.Button(self.video_buttons, image=self.image_video_pause, command=self.switch_play, bd=0, background="#23272a", activebackground="#23272a")
+        self.button_pause = tk.Button(self.video_buttons, image=self.image_video_pause, command=self.switch_play, bd=0, background="#000C18", activebackground="#000C18")
         self.button_pause.grid(row=1, column=3, padx=15, pady=15)
 
-        self.button_loop = tk.Button(self.video_buttons, image=self.image_video_loop_off, command=self.switch_loop, bd=0, background="#23272a", activebackground="#23272a")
+        self.button_loop = tk.Button(self.video_buttons, image=self.image_video_loop_off, command=self.switch_loop, bd=0, background="#000C18", activebackground="#000C18")
         self.button_loop.grid(row=1, column=2, padx=15, pady=15)
 
-        self.button_repeat = tk.Button(self.video_buttons, image=self.image_video_replay, command=self.replay_video, bd=0, background="#23272a", activebackground="#23272a")
+        self.button_repeat = tk.Button(self.video_buttons, image=self.image_video_replay, command=self.replay_video, bd=0, background="#000C18", activebackground="#000C18")
         self.button_repeat.grid(row=1, column=1, padx=15, pady=15)
 
-        self.button_record = tk.Button(self.video_buttons, image=self.image_video_record_off, command=self.video_record, bd=0, background="#23272a", activebackground="#23272a")
+        self.button_record = tk.Button(self.video_buttons, image=self.image_video_record_off, command=self.video_record, bd=0, background="#000C18", activebackground="#000C18")
         self.button_record.grid(row=1, column=4, padx=15, pady=15)
 
-        self.button_snapshot = tk.Button(self.video_buttons, image=self.image_video_snapshot, command=self.take_snapshot, bd=0, background="#23272a", activebackground="#23272a")
+        self.button_snapshot = tk.Button(self.video_buttons, image=self.image_video_snapshot, command=self.take_snapshot, bd=0, background="#000C18", activebackground="#000C18")
         self.button_snapshot.grid(row=1, column=5, padx=15, pady=15)
 
-        self.button_open = tk.Button(self.video_buttons, image=self.image_file_open, command=self.open_file, bd=0, background="#23272a", activebackground="#23272a")
+        self.button_open = tk.Button(self.video_buttons, image=self.image_file_open, command=self.open_file, bd=0, background="#000C18", activebackground="#000C18")
         self.button_open.grid(row=1, column=6, padx=15, pady=15)
 
         self.button_face_detect = tk.Button(self.video_button_effects, text="Face Detect Off", width=15, command=self.face_detection_video)
@@ -289,16 +289,16 @@ class VideoPage(tk.Frame):
         self.info_labels()
 
     def info_labels(self):
-        self.info = tk.Frame(self, background="#23272a")
+        self.info = tk.Frame(self, background="#000C18")
         self.info.place(bordermode="outside", x=800, y=20)
 
-        self.face_detected = tk.Label(self.info, text=f"Face Detected: {face_detected_count}",  font=("Segoe UI Black", 10), bg="#23272a", fg="#ffffff")
+        self.face_detected = tk.Label(self.info, text=f"Face Detected: {face_detected_count}",  font=("Segoe UI Black", 10), bg="#000C18", fg="#ffffff")
         self.face_detected.grid(row=0, column=0, padx=15, pady=15, sticky="W")
         
-        self.masked_detected = tk.Label(self.info, text=f"Masked Detected: {masked_detected_count}", font=("Segoe UI Black", 10), bg="#23272a", fg="#ffffff")
+        self.masked_detected = tk.Label(self.info, text=f"Masked Detected: {masked_detected_count}", font=("Segoe UI Black", 10), bg="#000C18", fg="#ffffff")
         self.masked_detected.grid(row=1, column=0, padx=15, pady=15, sticky="W")
 
-        self.unmasked_detected = tk.Label(self.info, text=f"Unmasked Detected: {umasked_detected_count}", font=("Segoe UI Black", 10), bg="#23272a", fg="#ffffff")
+        self.unmasked_detected = tk.Label(self.info, text=f"Unmasked Detected: {umasked_detected_count}", font=("Segoe UI Black", 10), bg="#000C18", fg="#ffffff")
         self.unmasked_detected.grid(row=2, column=0, padx=15, pady=15, sticky="W")
     
     def reset_count(self):
@@ -588,7 +588,7 @@ class VideoCapture:
 class ImagePage(tk.Frame):
     def __init__(self, parent, controller):
         tk.Frame.__init__(self, parent)
-        self.configure(background="#23272a")
+        self.configure(background="#000C18")
 
         self.image = None
 
@@ -601,19 +601,19 @@ class ImagePage(tk.Frame):
         self.canvas.pack(anchor="center", padx=20, pady=20)
         self.canvas.create_image(0, 0, image=self.image_video_blank, anchor='nw')
         
-        self.image_buttons = tk.Frame(self, background="#23272a")
+        self.image_buttons = tk.Frame(self, background="#000C18")
         self.image_buttons.pack()
 
-        self.button_repeat = tk.Button(self.image_buttons, image=self.image_video_replay, command=self.restore_image, bd=0, background="#23272a", activebackground="#23272a")
+        self.button_repeat = tk.Button(self.image_buttons, image=self.image_video_replay, command=self.restore_image, bd=0, background="#000C18", activebackground="#000C18")
         self.button_repeat.grid(row=1, column=1, padx=15, pady=15)
 
-        self.button_snapshot = tk.Button(self.image_buttons, image=self.image_video_snapshot, command=self.take_snapshot, bd=0, background="#23272a", activebackground="#23272a")
+        self.button_snapshot = tk.Button(self.image_buttons, image=self.image_video_snapshot, command=self.take_snapshot, bd=0, background="#000C18", activebackground="#000C18")
         self.button_snapshot.grid(row=1, column=5, padx=15, pady=15)
 
-        self.button_open = tk.Button(self.image_buttons, image=self.image_file_open, command=self.open_file, bd=0, background="#23272a", activebackground="#23272a")
+        self.button_open = tk.Button(self.image_buttons, image=self.image_file_open, command=self.open_file, bd=0, background="#000C18", activebackground="#000C18")
         self.button_open.grid(row=1, column=6, padx=15, pady=15)
         
-        self.image_button_effects = tk.Frame(self, background="#23272a")
+        self.image_button_effects = tk.Frame(self, background="#000C18")
         self.image_button_effects.pack()
 
         self.button_face_detect = tk.Button(self.image_button_effects, text="Face Detect Off", width=15, command=self.face_detection_image)
@@ -813,7 +813,7 @@ class ImageCapture:
 class CameraPage(tk.Frame):
     def __init__(self, parent, controller):
         tk.Frame.__init__(self, parent)
-        self.configure(background="#23272a")
+        self.configure(background="#000C18")
         
         self.video = VideoCapture(0)
         self.video_frame = None
@@ -842,19 +842,19 @@ class CameraPage(tk.Frame):
         self.canvas.pack(anchor="center", padx=20, pady=20)
         self.canvas.create_image(0, 0, image=self.image_video_blank, anchor='nw')
 
-        self.video_buttons = tk.Frame(self, background="#23272a")
+        self.video_buttons = tk.Frame(self, background="#000C18")
         self.video_buttons.pack()
 
-        self.video_button_effects = tk.Frame(self, background="#23272a")
+        self.video_button_effects = tk.Frame(self, background="#000C18")
         self.video_button_effects.pack()
 
-        self.button_pause = tk.Button(self.video_buttons, image=self.image_video_pause, command=self.switch_play, bd=0, background="#23272a", activebackground="#23272a")
+        self.button_pause = tk.Button(self.video_buttons, image=self.image_video_pause, command=self.switch_play, bd=0, background="#000C18", activebackground="#000C18")
         self.button_pause.grid(row=1, column=3, padx=15, pady=15)
 
-        self.button_record = tk.Button(self.video_buttons, image=self.image_video_record_off, command=self.video_record, bd=0, background="#23272a", activebackground="#23272a")
+        self.button_record = tk.Button(self.video_buttons, image=self.image_video_record_off, command=self.video_record, bd=0, background="#000C18", activebackground="#000C18")
         self.button_record.grid(row=1, column=4, padx=15, pady=15)
 
-        self.button_snapshot = tk.Button(self.video_buttons, image=self.image_video_snapshot, command=self.take_snapshot, bd=0, background="#23272a", activebackground="#23272a")
+        self.button_snapshot = tk.Button(self.video_buttons, image=self.image_video_snapshot, command=self.take_snapshot, bd=0, background="#000C18", activebackground="#000C18")
         self.button_snapshot.grid(row=1, column=5, padx=15, pady=15)
 
         self.button_face_detect = tk.Button(self.video_button_effects, text="Face Detect Off", width=15, command=self.face_detection_video)
@@ -881,16 +881,16 @@ class CameraPage(tk.Frame):
         self.info_labels()
 
     def info_labels(self):
-        self.info = tk.Frame(self, background="#23272a")
+        self.info = tk.Frame(self, background="#000C18")
         self.info.place(bordermode="outside", x=800, y=20)
 
-        self.face_detected = tk.Label(self.info, text=f"Face Detected: {face_detected_count}",  font=("Segoe UI Black", 10), bg="#23272a", fg="#ffffff")
+        self.face_detected = tk.Label(self.info, text=f"Face Detected: {face_detected_count}",  font=("Segoe UI Black", 10), bg="#000C18", fg="#ffffff")
         self.face_detected.grid(row=0, column=0, padx=15, pady=15, sticky="W")
         
-        self.masked_detected = tk.Label(self.info, text=f"Masked Detected: {masked_detected_count}", font=("Segoe UI Black", 10), bg="#23272a", fg="#ffffff")
+        self.masked_detected = tk.Label(self.info, text=f"Masked Detected: {masked_detected_count}", font=("Segoe UI Black", 10), bg="#000C18", fg="#ffffff")
         self.masked_detected.grid(row=1, column=0, padx=15, pady=15, sticky="W")
 
-        self.unmasked_detected = tk.Label(self.info, text=f"Unmasked Detected: {umasked_detected_count}", font=("Segoe UI Black", 10), bg="#23272a", fg="#ffffff")
+        self.unmasked_detected = tk.Label(self.info, text=f"Unmasked Detected: {umasked_detected_count}", font=("Segoe UI Black", 10), bg="#000C18", fg="#ffffff")
         self.unmasked_detected.grid(row=2, column=0, padx=15, pady=15, sticky="W")
     
     def reset_count(self):
