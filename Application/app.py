@@ -11,10 +11,8 @@ from threading import Thread
 import tensorflow as tf
 from tensorflow.keras.models import load_model
 
-# Load the model
 MASK_DETECTION_MODEL = load_model('data\models\model.h5')
 
-# Define mediapipe Face detector
 face_detection = mp.solutions.face_detection.FaceDetection()
 
 face_detected_count = 0
@@ -95,9 +93,11 @@ classifier = cv2.CascadeClassifier('data/models/haarcascade_frontalface_default.
 size = 7
 
 def get_detection(frame):
-    #frame = cv2.cvtColor(frame, cv2.COLOR_RGB2BGR)
-    #frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-    #frame = cv2.equalizeHist(frame)
+    '''
+    frame = cv2.cvtColor(frame, cv2.COLOR_RGB2BGR)
+    frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+    frame = cv2.equalizeHist(frame)
+    '''
     resized_down = cv2.resize(frame, (frame.shape[1] // size, frame.shape[0] // size))
     faces = classifier.detectMultiScale(resized_down)
     return faces
@@ -171,8 +171,9 @@ class tkinterApp(tk.Tk):
         self.container.pack(side="top", fill="both", expand=True)
         self.container.grid_rowconfigure(0, weight=1)
         self.container.grid_columnconfigure(0, weight=1)
-        
-        #self.frames = {}
+        '''
+        self.frames = {}
+        '''
         self.show_frame(MenuPage)
 
     def show_frame(self, page, *args):
@@ -185,6 +186,62 @@ class tkinterApp(tk.Tk):
         frame = page(self.container, self, *args)
         frame.grid(row=0, column=0, sticky="nsew")
         frame.tkraise()
+
+class Warning:
+    def __init__(self, root, title, message):
+        self.root = root
+        self.root.title(title)
+        self.root.geometry("450x325")
+        self.root.resizable(width=False, height=False)
+        self.root.configure(background="#000C18")
+
+        frame_main = tk.Frame(self.root, background="#000C18")
+        frame_main.pack(pady=20)
+
+        label_warning_icon = tk.Label(frame_main, text="⚠", font=("Tw Cen MT", 50, "bold"), bg="#000C18", fg="#E62A32")
+        label_warning_icon.pack(padx=20, pady=10)
+
+        label_message = tk.Label(frame_main, text=message, font=("Tw Cen MT", 20), bg="#000C18", fg="#FFFFFF")
+        label_message.pack(padx=20, pady=15)
+
+        frame_button = tk.Frame(self.root, background="#000C18")
+        frame_button.pack(pady=20)
+
+        button_quit = tk.Button(frame_button, text="OK", command=self.root.destroy, height=1, width=8, fg="#FFFFFF", bg="#E62A32", bd=0, activebackground="#2c2f33", activeforeground="#FFFFFF", font=("Tw Cen MT Condensed", 20, "bold"), relief="flat")
+        button_quit.pack()
+
+class AskQuit:
+    def __init__(self, root, controller, title):
+        self.root = root
+        self.root.title(title)
+        self.root.geometry("450x325")
+        self.root.resizable(width=False, height=False)
+        self.root.configure(background="#000C18")
+        self.controller = controller
+
+        frame_main = tk.Frame(self.root, background="#000C18")
+        frame_main.pack(pady=20)
+
+        label_warning_icon = tk.Label(frame_main, text="✋", font=("UD Digi Kyokasho NK-B", 50), bg="#000C18", fg="#E62A32")
+        label_warning_icon.pack(padx=20, pady=10)
+
+        label_message = tk.Label(frame_main, text="Are you sure you want to quit?", font=("Tw Cen MT", 20), bg="#000C18", fg="#FFFFFF")
+        label_message.pack(padx=20, pady=15)
+
+        frame_button = tk.Frame(self.root, background="#000C18")
+        frame_button.pack(pady=20)
+
+        button_yes = tk.Button(frame_button, text="Yes", command=self.yes, height=1, width=8, fg="#FFFFFF", bg="#E62A32", bd=0, activebackground="#2c2f33", activeforeground="#FFFFFF", font=("Tw Cen MT Condensed", 20, "bold"), relief="flat")
+        button_yes.grid(row=0, column=0, padx=20)
+
+        button_no = tk.Button(frame_button, text="No", command=self.no, height=1, width=8, fg="#FFFFFF", bg="#00AAEB", bd=0, activebackground="#2c2f33", activeforeground="#FFFFFF", font=("Tw Cen MT Condensed", 20, "bold"), relief="flat")
+        button_no.grid(row=0, column=1, padx=20)
+
+    def yes(self):
+        self.controller.destroy()
+    
+    def no(self):
+        self.root.destroy()
 
 class MenuPage(tk.Frame):
     def __init__(self, parent, controller):
@@ -204,14 +261,17 @@ class MenuPage(tk.Frame):
         button_camera = tk.Button(self, text="Camera", command=self.browse_camera_page, width=12, fg="#FFFFFF", bg="#00AAEB", bd=0, activebackground="#15272F", activeforeground="#FFFFFF", font=("Tw Cen MT Condensed", 20, "bold"), relief="raised")
         button_camera.pack(pady=20)
 
-        button_quit = tk.Button(self, text="Quit", command=lambda: AskQuit(tk.Toplevel(self), self.controller, "Face Mask Detection System"), width=12, fg="#FFFFFF", bg="#E62A32", bd=0, activebackground="#15272F", activeforeground="#FFFFFF", font=("Tw Cen MT Condensed", 20, "bold"), relief="raised")
+        button_quit = tk.Button(self, text="Quit", command=lambda: AskQuit(tk.Toplevel(self), self.controller, "Quit"), width=12, fg="#FFFFFF", bg="#E62A32", bd=0, activebackground="#15272F", activeforeground="#FFFFFF", font=("Tw Cen MT Condensed", 20, "bold"), relief="raised")
         button_quit.pack(pady=20)
 
     def browse_camera_page(self):
         try:
             self.controller.show_frame(CameraPage)
         except ValueError:
-            Warning(tk.Toplevel(self), "Camera Page", "No webcam available.")
+            Warning(tk.Toplevel(self), "Warning", "No webcam available.")
+        except:
+            Warning(tk.Toplevel(self), "Warning", "An error occured.")
+
 
 class VideoPage(tk.Frame):
     def __init__(self, parent, controller):
@@ -229,25 +289,18 @@ class VideoPage(tk.Frame):
 
         self.image_video_pause = ImageTk.PhotoImage(Image.open("assets/images/video_pause.png"))
         self.image_video_play = ImageTk.PhotoImage(Image.open("assets/images/video_play.png"))
-
         self.image_video_loop_off = ImageTk.PhotoImage(Image.open("assets/images/video_loop_off.png"))
         self.image_video_loop_on = ImageTk.PhotoImage(Image.open("assets/images/video_loop_on.png"))
-
         self.image_video_replay = ImageTk.PhotoImage(Image.open("assets/images/video_replay.png"))
-        
         self.image_video_record_off = ImageTk.PhotoImage(Image.open("assets/images/video_record_off.png"))
         self.image_video_record_on = ImageTk.PhotoImage(Image.open("assets/images/video_record_on.png"))
-        
         self.image_file_open = ImageTk.PhotoImage(Image.open("assets/images/file_open.png"))
         self.image_video_snapshot = ImageTk.PhotoImage(Image.open("assets/images/video_snapshot.png"))
-
         self.image_video_blank = ImageTk.PhotoImage(Image.open("assets/images/video_blank.png"))
-        
         
         self.canvas = tk.Canvas(self, width=498, height=498)
         self.canvas.pack(anchor="center", padx=20, pady=20)
         self.canvas.create_image(0, 0, image=self.image_video_blank, anchor='nw')
-        
         
         '''
         self.canvas = tk.Label(self, width=500, height=500)
@@ -338,7 +391,6 @@ class VideoPage(tk.Frame):
                     self.video_frame = self.video.get_frame()
                     self.video_image = ImageTk.PhotoImage(image=Image.fromarray(self.video_frame))
                     self.canvas.create_image(0, 0, image=self.video_image, anchor='nw')
-                    
                     
                     '''
                     self.video_frame = self.video.get_frame()
@@ -618,7 +670,7 @@ class ImagePage(tk.Frame):
         self.image_video_replay = ImageTk.PhotoImage(Image.open("assets/images/video_replay.png"))
         self.image_video_snapshot = ImageTk.PhotoImage(Image.open("assets/images/video_snapshot.png"))
         self.image_file_open = ImageTk.PhotoImage(Image.open("assets/images/file_open.png"))
-        self.image_video_blank = ImageTk.PhotoImage(Image.open("assets/images/video_blank.png"))
+        self.image_video_blank = ImageTk.PhotoImage(Image.open("assets/images/image_blank.png"))
         
         self.canvas = tk.Canvas(self, width=498, height=498)
         self.canvas.pack(anchor="center", padx=20, pady=20)
@@ -838,7 +890,7 @@ class CameraPage(tk.Frame):
         tk.Frame.__init__(self, parent)
         self.configure(background="#000C18")
         
-        self.video = VideoCapture(0)
+        self.video = VideoCapture('test.mp4')
         self.video_frame = None
         
         self.video_pause = True
@@ -847,19 +899,14 @@ class CameraPage(tk.Frame):
 
         self.image_video_pause = ImageTk.PhotoImage(Image.open("assets/images/video_camera_off.png"))
         self.image_video_play = ImageTk.PhotoImage(Image.open("assets/images/video_camera_on.png"))
-
         self.image_video_loop_off = ImageTk.PhotoImage(Image.open("assets/images/video_loop_off.png"))
         self.image_video_loop_on = ImageTk.PhotoImage(Image.open("assets/images/video_loop_on.png"))
-
         self.image_video_replay = ImageTk.PhotoImage(Image.open("assets/images/video_replay.png"))
-        
         self.image_video_record_off = ImageTk.PhotoImage(Image.open("assets/images/video_record_off.png"))
         self.image_video_record_on = ImageTk.PhotoImage(Image.open("assets/images/video_record_on.png"))
-        
         self.image_file_open = ImageTk.PhotoImage(Image.open("assets/images/file_open.png"))
         self.image_video_snapshot = ImageTk.PhotoImage(Image.open("assets/images/video_snapshot.png"))
-
-        self.image_video_blank = ImageTk.PhotoImage(Image.open("assets/images/video_blank.png"))
+        self.image_video_blank = ImageTk.PhotoImage(Image.open("assets/images/camera_blank.png"))
         
         self.canvas = tk.Canvas(self, width=498, height=498)
         self.canvas.pack(anchor="center", padx=20, pady=20)
@@ -1087,62 +1134,6 @@ class CameraPage(tk.Frame):
         self.video.vertical_flip_effect_is_enabled = False
         self.button_vertical_flip.config(fg="#151515", bg="#FFFFFF")
 
-
-class Warning:
-    def __init__(self, root, title, message):
-        self.root = root
-        self.root.title(title)
-        self.root.geometry("450x325")
-        self.root.resizable(width=False, height=False)
-        self.root.configure(background="#23272a")
-
-        frame_main = tk.Frame(self.root, background="#23272a")
-        frame_main.pack(pady=20)
-
-        label_warning_icon = tk.Label(frame_main, text="⚠", font=("UD Digi Kyokasho NK-B", 50), bg="#23272a", fg="#f04747")
-        label_warning_icon.pack(padx=20, pady=10)
-
-        label_message = tk.Label(frame_main, text=message, font=("UD Digi Kyokasho NK-B", 16), bg="#23272a", fg="#ffffff")
-        label_message.pack(padx=20, pady=15)
-
-        frame_button = tk.Frame(self.root, background="#23272a")
-        frame_button.pack(pady=20)
-
-        button_quit = tk.Button(frame_button, text="OK", command=self.root.destroy, height=1, width=8, fg="#ffffff", bg="#f04747", bd=0, activebackground="#2c2f33", activeforeground="#ffffff", font=("Tw Cen MT", 20, "bold"), relief="flat")
-        button_quit.pack()
-
-class AskQuit:
-    def __init__(self, root, controller, title):
-        self.root = root
-        self.root.title(title)
-        self.root.geometry("450x325")
-        self.root.resizable(width=False, height=False)
-        self.root.configure(background="#23272a")
-        self.controller = controller
-
-        frame_main = tk.Frame(self.root, background="#23272a")
-        frame_main.pack(pady=20)
-
-        label_warning_icon = tk.Label(frame_main, text="✋", font=("UD Digi Kyokasho NK-B", 50), bg="#23272a", fg="#f04747")
-        label_warning_icon.pack(padx=20, pady=10)
-
-        label_message = tk.Label(frame_main, text="Are you sure you want to quit?", font=("UD Digi Kyokasho NK-B", 16), bg="#23272a", fg="#ffffff")
-        label_message.pack(padx=20, pady=15)
-
-        frame_button = tk.Frame(self.root, background="#23272a")
-        frame_button.pack(pady=20)
-
-        button_yes = tk.Button(frame_button, text="Yes", command=self.yes, height=1, width=8, fg="#ffffff", bg="#f04747", bd=0, activebackground="#2c2f33", activeforeground="#ffffff", font=("Tw Cen MT", 20, "bold"), relief="flat")
-        button_yes.grid(row=0, column=0, padx=20)
-
-        button_no = tk.Button(frame_button, text="No", command=self.no, height=1, width=8, fg="#ffffff", bg="#04c360", bd=0, activebackground="#2c2f33", activeforeground="#ffffff", font=("Tw Cen MT", 20, "bold"), relief="flat")
-        button_no.grid(row=0, column=1, padx=20)
-
-    def yes(self):
-        self.controller.destroy()
-    
-    def no(self):
-        self.root.destroy()
 
 if __name__ == "__main__":
     app = tkinterApp()
