@@ -17,9 +17,6 @@ MASK_DETECTION_MODEL = load_model('data\models\model.h5')
 # Define mediapipe Face detector
 face_detection = mp.solutions.face_detection.FaceDetection()
 
-WHITE = "#FFFFFF"
-BLUE = "#4C9FFC"
-
 face_detected_count = 0
 masked_detected_count = 0
 umasked_detected_count = 0
@@ -98,9 +95,9 @@ classifier = cv2.CascadeClassifier('data/models/haarcascade_frontalface_default.
 size = 7
 
 def get_detection(frame):
-    frame = cv2.cvtColor(frame, cv2.COLOR_RGB2BGR)
-    frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-    frame = cv2.equalizeHist(frame)
+    #frame = cv2.cvtColor(frame, cv2.COLOR_RGB2BGR)
+    #frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+    #frame = cv2.equalizeHist(frame)
     resized_down = cv2.resize(frame, (frame.shape[1] // size, frame.shape[0] // size))
     faces = classifier.detectMultiScale(resized_down)
     return faces
@@ -825,8 +822,8 @@ class CameraPage(tk.Frame):
         self.video_delay = 1
         self.video_end = False
 
-        self.image_video_pause = ImageTk.PhotoImage(Image.open("assets/images/video_pause.png"))
-        self.image_video_play = ImageTk.PhotoImage(Image.open("assets/images/video_play.png"))
+        self.image_video_pause = ImageTk.PhotoImage(Image.open("assets/images/video_camera_off.png"))
+        self.image_video_play = ImageTk.PhotoImage(Image.open("assets/images/video_camera_on.png"))
 
         self.image_video_loop_off = ImageTk.PhotoImage(Image.open("assets/images/video_loop_off.png"))
         self.image_video_loop_on = ImageTk.PhotoImage(Image.open("assets/images/video_loop_on.png"))
