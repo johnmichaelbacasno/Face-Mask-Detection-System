@@ -299,7 +299,7 @@ class VideoPage(tk.Frame):
 
         self.unmasked_detected = tk.Label(self.info, text=f"Unmasked Detected: {umasked_detected_count}", font=("Segoe UI Black", 10), bg="#23272a", fg="#ffffff")
         self.unmasked_detected.grid(row=2, column=0, padx=15, pady=15, sticky="W")
-
+    
     def reset_count(self):
         global face_detected_count, masked_detected_count, umasked_detected_count
         face_detected_count = 0
@@ -712,6 +712,270 @@ class ImageCapture:
         if self.grey_effect_is_enabled: frame = grey(frame)
         frame = cv2.resize(frame, (self.width, self.height), interpolation=cv2.INTER_LINEAR)
         return cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+
+class CameraPage(tk.Frame):
+    def __init__(self, parent, controller):
+        tk.Frame.__init__(self, parent)
+        self.configure(background="#23272a")
+        
+        self.video = VideoCapture(0)
+        self.video_frame = None
+        self.video_filename = None
+        
+        self.video_pause = True
+        self.video_loop = False
+        self.video_delay = 1
+        self.video_end = False
+
+        self.image_video_pause = ImageTk.PhotoImage(Image.open("assets/images/video_pause.png"))
+        self.image_video_play = ImageTk.PhotoImage(Image.open("assets/images/video_play.png"))
+
+        self.image_video_loop_off = ImageTk.PhotoImage(Image.open("assets/images/video_loop_off.png"))
+        self.image_video_loop_on = ImageTk.PhotoImage(Image.open("assets/images/video_loop_on.png"))
+
+        self.image_video_replay = ImageTk.PhotoImage(Image.open("assets/images/video_replay.png"))
+        
+        self.image_video_record_off = ImageTk.PhotoImage(Image.open("assets/images/video_record_off.png"))
+        self.image_video_record_on = ImageTk.PhotoImage(Image.open("assets/images/video_record_on.png"))
+        
+        self.image_file_open = ImageTk.PhotoImage(Image.open("assets/images/file_open.png"))
+        self.image_video_snapshot = ImageTk.PhotoImage(Image.open("assets/images/video_snapshot.png"))
+
+        self.image_video_blank = ImageTk.PhotoImage(Image.open("assets/images/video_blank.png"))
+        
+        self.canvas = tk.Canvas(self, width=500, height=500)
+        self.canvas.pack(anchor="center", padx=20, pady=20)
+        self.canvas.create_image(0, 0, image=self.image_video_blank, anchor='nw')
+
+        self.video_buttons = tk.Frame(self, background="#23272a")
+        self.video_buttons.pack()
+
+        self.video_button_effects = tk.Frame(self, background="#23272a")
+        self.video_button_effects.pack()
+
+        self.button_pause = tk.Button(self.video_buttons, image=self.image_video_pause, command=self.switch_play, bd=0, background="#23272a", activebackground="#23272a")
+        self.button_pause.grid(row=1, column=3, padx=15, pady=15)
+
+        self.button_record = tk.Button(self.video_buttons, image=self.image_video_record_off, command=self.video_record, bd=0, background="#23272a", activebackground="#23272a")
+        self.button_record.grid(row=1, column=4, padx=15, pady=15)
+
+        self.button_snapshot = tk.Button(self.video_buttons, image=self.image_video_snapshot, command=self.take_snapshot, bd=0, background="#23272a", activebackground="#23272a")
+        self.button_snapshot.grid(row=1, column=5, padx=15, pady=15)
+
+        self.button_face_detect = tk.Button(self.video_button_effects, text="Face Detect Off", width=15, command=self.face_detection_video)
+        self.button_face_detect.grid(row=1, column=0, padx=15, pady=15)
+
+        self.button_mask_detect = tk.Button(self.video_button_effects, text="Mask Detect Off", width=15, command=self.mask_detection_video)
+        self.button_mask_detect.grid(row=1, column=1, padx=15, pady=15)
+
+        self.button_grey = tk.Button(self.video_button_effects, text="Grey Off", width=15, command=self.grey_video)
+        self.button_grey.grid(row=1, column=2, padx=15, pady=15)
+
+        self.button_negative = tk.Button(self.video_button_effects, text="Negative Off", width=15, command=self.negative_video)
+        self.button_negative.grid(row=1, column=3, padx=15, pady=15)
+
+        self.button_horizontal_flip = tk.Button(self.video_button_effects, text="H-Flip Off", width=15, command=self.horizontal_flip_video)
+        self.button_horizontal_flip.grid(row=1, column=4, padx=15, pady=15)
+
+        self.button_vertical_flip = tk.Button(self.video_button_effects, text="V-Flip Off", width=15, command=self.vertical_flip_video)
+        self.button_vertical_flip.grid(row=1, column=5, padx=15, pady=15)
+
+        self.button_back = tk.Button(self, text="Back", width=15, command=self.end_page)
+        self.button_back.place(bordermode="outside", x=20, y=20)
+
+        self.info_labels()
+
+    def info_labels(self):
+        self.info = tk.Frame(self, background="#23272a")
+        self.info.place(bordermode="outside", x=800, y=20)
+
+        self.face_detected = tk.Label(self.info, text=f"Face Detected: {face_detected_count}",  font=("Segoe UI Black", 10), bg="#23272a", fg="#ffffff")
+        self.face_detected.grid(row=0, column=0, padx=15, pady=15, sticky="W")
+        
+        self.masked_detected = tk.Label(self.info, text=f"Masked Detected: {masked_detected_count}", font=("Segoe UI Black", 10), bg="#23272a", fg="#ffffff")
+        self.masked_detected.grid(row=1, column=0, padx=15, pady=15, sticky="W")
+
+        self.unmasked_detected = tk.Label(self.info, text=f"Unmasked Detected: {umasked_detected_count}", font=("Segoe UI Black", 10), bg="#23272a", fg="#ffffff")
+        self.unmasked_detected.grid(row=2, column=0, padx=15, pady=15, sticky="W")
+    
+    def reset_count(self):
+        global face_detected_count, masked_detected_count, umasked_detected_count
+        face_detected_count = 0
+        masked_detected_count = 0
+        umasked_detected_count = 0
+    
+    def end_page(self):
+        self.reset_count()
+        self.destroy()
+    
+    def take_snapshot(self):
+        if self.video:
+            cv2.imwrite(f"snapshots/image-{time.strftime('%Y-%m-%d-%H-%M-%S')}.jpg", cv2.cvtColor(self.video_frame, cv2.COLOR_RGB2BGR))
+    
+    def play_video(self):
+        if self.video:
+            self.info_labels()
+            if not self.video_pause:
+                try:
+                    self.video_frame = self.video.get_frame()
+                    self.video_image = ImageTk.PhotoImage(image=Image.fromarray(self.video_frame))
+                    self.canvas.create_image(0, 0, image=self.video_image, anchor='nw')
+                except VideoRunOutOfFrame:
+                    if self.video_loop:
+                        self.replay_video()
+                    else:
+                        self.video_end = True
+                        self.pause_video()
+                    self.end_video_recording()
+                self.after(self.video_delay, self.play_video)
+            else:
+                if self.video_end:
+                    pass
+                else:
+                    self.canvas.create_image(0, 0, image=self.image_video_blank, anchor='nw')
+    
+    def switch_play(self):
+        if self.video:
+            if self.video_pause:
+                self.resume_video()
+            else:
+                self.pause_video()
+    
+    def pause_video(self):
+        self.video_pause = True
+        self.button_pause.config(image=self.image_video_pause)
+    
+    def resume_video(self):
+        if self.video_pause:
+            self.video_pause = False
+            self.button_pause.config(image=self.image_video_play)
+            self.play_video()
+
+    def replay_video(self):
+        if self.video:
+            self.video.refresh()
+            self.video_end = False
+            self.resume_video()
+    
+    def video_record(self):
+        if self.video and not self.video_end:
+            if self.video.recording:
+                self.end_video_recording()
+            else:
+                self.start_video_recording()
+    
+    def start_video_recording(self):
+        self.video.recording = True
+        self.button_record.config(image=self.image_video_record_on)
+        self.video.record_video()
+
+    def end_video_recording(self):
+        self.video.recording = False
+        self.button_record.config(image=self.image_video_record_off)
+
+    # Face Detection
+    
+    def face_detection_video(self):
+        if self.video:
+            if self.video.face_detection_is_enabled:
+                self.end_face_detection()
+            else:
+                self.end_mask_detection()
+                self.start_face_detection()
+    
+    def start_face_detection(self):
+        self.video.face_detection_is_enabled = True
+        self.button_face_detect.config(text="Face Detect On")
+    
+    def end_face_detection(self):
+        self.video.face_detection_is_enabled = False
+        self.button_face_detect.config(text="Face Detect Off")
+
+    # Mask Detection
+
+    def mask_detection_video(self):
+        if self.video:
+            if self.video.mask_detection_is_enabled:
+                self.end_mask_detection()
+            else:
+                self.end_face_detection()
+                self.start_mask_detection()
+    
+    def start_mask_detection(self):
+        self.video.mask_detection_is_enabled = True
+        self.button_mask_detect.config(text="Mask Detect On")
+    
+    def end_mask_detection(self):
+        self.video.mask_detection_is_enabled = False
+        self.button_mask_detect.config(text="Mask Detect Off")
+    
+    # Grey Video Effect
+
+    def grey_video(self):
+        if self.video:
+            if self.video.grey_effect_is_enabled:
+                self.end_grey_video()
+            else:
+                self.start_grey_video()
+    
+    def start_grey_video(self):
+        self.video.grey_effect_is_enabled = True
+        self.button_grey.config(text="Grey On")
+    
+    def end_grey_video(self):
+        self.video.grey_effect_is_enabled = False
+        self.button_grey.config(text="Grey Off")
+    
+    # Negative Video Effect
+
+    def negative_video(self):
+        if self.video:
+            if self.video.negative_effect_is_enabled:
+                self.end_negative_video()
+            else:
+                self.start_negative_video()
+    
+    def start_negative_video(self):
+        self.video.negative_effect_is_enabled = True
+        self.button_negative.config(text="Negative On")
+    
+    def end_negative_video(self):
+        self.video.negative_effect_is_enabled = False
+        self.button_negative.config(text="Negative Off")
+    
+    # Horizontal Flip Video Effect
+    
+    def horizontal_flip_video(self):
+        if self.video:
+            if self.video.horizontal_flip_effect_is_enabled:
+                self.end_horizontal_flip_video()
+            else:
+                self.start_horizontal_flip_video()
+
+    def start_horizontal_flip_video(self):
+        self.video.horizontal_flip_effect_is_enabled = True
+        self.button_horizontal_flip.config(text="H-Flip On")
+    
+    def end_horizontal_flip_video(self):
+        self.video.horizontal_flip_effect_is_enabled = False
+        self.button_horizontal_flip.config(text="H-Flip Off")
+    
+    # Vetical Flip Video Effect
+    
+    def vertical_flip_video(self):
+        if self.video:
+            if self.video.vertical_flip_effect_is_enabled:
+                self.end_vertical_flip_video()
+            else:
+                self.start_vertical_flip_video()
+    
+    def start_vertical_flip_video(self):
+        self.video.vertical_flip_effect_is_enabled = True
+        self.button_vertical_flip.config(text="V-Flip On")
+    
+    def end_vertical_flip_video(self):
+        self.video.vertical_flip_effect_is_enabled = False
+        self.button_vertical_flip.config(text="V-Flip Off")
 
 if __name__ == "__main__":
     app = tkinterApp()
