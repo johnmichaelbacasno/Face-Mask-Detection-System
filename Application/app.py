@@ -20,6 +20,11 @@ face_detection = mp.solutions.face_detection.FaceDetection()
 WHITE = "#FFFFFF"
 BLUE = "#4C9FFC"
 
+face_detected_count = 0
+masked_detected_count = 0
+umasked_detected_count = 0
+
+
 class VideoRunOutOfFrame(Exception):
     pass
 
@@ -92,11 +97,9 @@ def detect_mask(frame):
 classifier = cv2.CascadeClassifier('data/models/haarcascade_frontalface_default.xml')
 size = 7
 
-face_detected_count = 0
-masked_detected_count = 0
-umasked_detected_count = 0
-
 def get_detection(frame):
+    frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+    frame = cv2.equalizeHist(frame)
     resized_down = cv2.resize(frame, (frame.shape[1] // size, frame.shape[0] // size))
     faces = classifier.detectMultiScale(resized_down)
     return faces
