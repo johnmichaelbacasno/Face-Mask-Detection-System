@@ -98,6 +98,7 @@ classifier = cv2.CascadeClassifier('data/models/haarcascade_frontalface_default.
 size = 7
 
 def get_detection(frame):
+    frame = cv2.cvtColor(frame, cv2.COLOR_RGB2BGR)
     frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
     frame = cv2.equalizeHist(frame)
     resized_down = cv2.resize(frame, (frame.shape[1] // size, frame.shape[0] // size))
@@ -559,7 +560,6 @@ class VideoCapture:
                 
                 if self.recording:
                     self.record_frame = frame
-                    #frame = cv2.putText(frame, "Recording...", (10, 50), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 4)
                 return cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
             else:
                 raise VideoRunOutOfFrame('No more video frames available.')
