@@ -847,12 +847,6 @@ class CameraPage(tk.Frame):
             self.video_pause = False
             self.button_pause.config(image=self.image_video_play)
             self.play_video()
-
-    def replay_video(self):
-        if self.video:
-            self.video.refresh()
-            self.video_end = False
-            self.resume_video()
     
     def video_record(self):
         if self.video and not self.video_end:
