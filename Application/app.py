@@ -106,21 +106,21 @@ def detect_face(frame):
     global size, face_detected_count
     try:
         image_copy = frame.copy()
-        faces_count = 0
+        # faces_count = 0
         for coor in get_detection(image_copy):
             x, y, w, h = (value * size for value in coor)
             color = (0, 255, 0)
             frame = cv2.rectangle(image_copy, (x, y) ,(x + w, y + h), color, 3)
             frame = cv2.putText(image_copy, 'Face', (x, y - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.8, color, 2,cv2.LINE_AA)
             faces_count += 1
-        face_detected_count = faces_count
+        # face_detected_count = faces_count
     except Exception as e:
         print(e)
     
     return frame
 
 def detect_mask(frame):
-    global size, face_detected_count, masked_detected_count, umasked_detected_count
+    # global size, face_detected_count, masked_detected_count, umasked_detected_count
     try:
         CATEGORIES = ['Mask', 'No Mask']
         image_copy = frame.copy()
@@ -140,19 +140,19 @@ def detect_mask(frame):
 
             if index == 0:
                 color = (0, 255, 0)
-                mask_count += 1
+                # mask_count += 1
             else:
                 color = (0, 0, 255)
-                unmasked_count += 1
+                # unmasked_count += 1
             
             frame = cv2.rectangle(frame, (x, y), (x + w, y + h), color, 3)
             frame = cv2.putText(frame, f"{response} {format(prediction[0][0]*100, '.2f')}%", (x, y - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.8, color, 2, cv2.LINE_AA)
 
-            faces_count += 1
+            # faces_count += 1
         
-        face_detected_count = faces_count
-        masked_detected_count = mask_count
-        umasked_detected_count = unmasked_count
+        # face_detected_count = faces_count
+        # masked_detected_count = mask_count
+        # umasked_detected_count = unmasked_count
     
     except:
         pass
@@ -268,9 +268,9 @@ class MenuPage(tk.Frame):
         try:
             self.controller.show_frame(CameraPage)
         except ValueError:
-            Warning(tk.Toplevel(self), "Warning", "No webcam available.")
+            Warning(tk.Toplevel(self), "Warning", "No webcam available")
         except:
-            Warning(tk.Toplevel(self), "Warning", "An error occured.")
+            Warning(tk.Toplevel(self), "Warning", "An error occured")
 
 
 class VideoPage(tk.Frame):
@@ -353,8 +353,9 @@ class VideoPage(tk.Frame):
         self.button_back = tk.Button(self, text="Back", command=self.end_page, width=12, fg="#FFFFFF", bg="#E62A32", bd=0, activebackground="#15272F", activeforeground="#FFFFFF", font=("Tw Cen MT Condensed", 12, "bold"), relief="raised")
         self.button_back.place(bordermode="outside", x=35, y=20)
 
-        self.info_labels()
+        # self.info_labels()
 
+    '''
     def info_labels(self):
         self.info = tk.Frame(self, background="#000C18")
         self.info.place(bordermode="outside", x=800, y=20)
@@ -373,9 +374,10 @@ class VideoPage(tk.Frame):
         face_detected_count = 0
         masked_detected_count = 0
         umasked_detected_count = 0
+    '''
     
     def end_page(self):
-        self.reset_count()
+        # self.reset_count()
         self.destroy()
     
     def take_snapshot(self):
@@ -384,7 +386,7 @@ class VideoPage(tk.Frame):
     
     def play_video(self):
         if self.video:
-            self.info_labels()
+            # self.info_labels()
             if not self.video_pause:
                 try:
                     
@@ -410,7 +412,7 @@ class VideoPage(tk.Frame):
                 if self.video_end:
                     pass
                 else:
-                    #self.canvas.create_image(0, 0, image=self.image_video_blank, anchor='nw')
+                    # self.canvas.create_image(0, 0, image=self.image_video_blank, anchor='nw')
                     pass
     
     def switch_loop(self):
@@ -460,7 +462,7 @@ class VideoPage(tk.Frame):
         
         if self.video_filename:
             self.video = VideoCapture(self.video_filename)
-            self.reset_count()
+            # self.reset_count()
             self.end_face_detection()
             self.end_mask_detection()
             self.end_grey_video()
@@ -890,7 +892,7 @@ class CameraPage(tk.Frame):
         tk.Frame.__init__(self, parent)
         self.configure(background="#000C18")
         
-        self.video = VideoCapture('test.mp4')
+        self.video = VideoCapture(0)
         self.video_frame = None
         
         self.video_pause = True
@@ -948,8 +950,9 @@ class CameraPage(tk.Frame):
         self.button_back = tk.Button(self, text="Back", command=self.end_page, width=12, fg="#FFFFFF", bg="#E62A32", bd=0, activebackground="#15272F", activeforeground="#FFFFFF", font=("Tw Cen MT Condensed", 12, "bold"), relief="raised")
         self.button_back.place(bordermode="outside", x=35, y=20)
 
-        self.info_labels()
+        # self.info_labels()
 
+    '''
     def info_labels(self):
         self.info = tk.Frame(self, background="#000C18")
         self.info.place(bordermode="outside", x=800, y=20)
@@ -969,8 +972,10 @@ class CameraPage(tk.Frame):
         masked_detected_count = 0
         umasked_detected_count = 0
     
+    '''
+    
     def end_page(self):
-        self.reset_count()
+        # self.reset_count()
         self.destroy()
     
     def take_snapshot(self):
@@ -979,7 +984,7 @@ class CameraPage(tk.Frame):
     
     def play_video(self):
         if self.video:
-            self.info_labels()
+            # self.info_labels()
             if not self.video_pause:
                 try:
                     self.video_frame = self.video.get_frame()
