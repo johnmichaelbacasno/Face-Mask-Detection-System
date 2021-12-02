@@ -1,5 +1,4 @@
 import os
-from tkinter.constants import E
 import cv2
 import time
 from tqdm import tqdm
@@ -19,7 +18,6 @@ print(f"CATEGORIES: {CATEGORIES}\n")
 x, y = [], []
 
 def preprocess():
-    
     for category in CATEGORIES:
         path = os.path.join(DATA_DIRECTORY_PATH, category)
         class_index = CATEGORIES.index(category)
@@ -30,8 +28,8 @@ def preprocess():
                 resized_array = cv2.resize(image_array, (IMAGE_SIZE, IMAGE_SIZE)) / 255.0
                 x.append(resized_array)
                 y.append(class_index)
-            except Exception as e:
-                print(e)
+            except Exception as exception:
+                print(exception)
         print("\n")
 
 preprocess()
