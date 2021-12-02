@@ -203,7 +203,7 @@ class MenuPage(tk.Frame):
         button_typing = tk.Button(self, text="Camera", command=lambda: controller.show_frame(CameraPage), width=12, fg="#ffffff", bg="#7289da", bd=0, activebackground="#2c2f33", activeforeground="#ffffff", font=("Tw Cen MT", 20, "bold"), relief="flat")
         button_typing.pack(pady=20)
 
-        button_back = tk.Button(self, text="Back", command=self.controller.destroy, width=12, fg="#ffffff", bg="#f04747", bd=0, activebackground="#2c2f33", activeforeground="#ffffff", font=("Tw Cen MT", 20, "bold"), relief="flat")
+        button_back = tk.Button(self, text="Quit", command=self.controller.destroy, width=12, fg="#ffffff", bg="#f04747", bd=0, activebackground="#2c2f33", activeforeground="#ffffff", font=("Tw Cen MT", 20, "bold"), relief="flat")
         button_back.pack(pady=20)
 
 class VideoPage(tk.Frame):
@@ -520,6 +520,7 @@ class VideoCapture:
         
         if not self.vid.isOpened():
             raise ValueError("Unable to open video source", self.source)
+        
         self.width = 500
         self.height = 500
 
@@ -720,10 +721,8 @@ class CameraPage(tk.Frame):
         
         self.video = VideoCapture(0)
         self.video_frame = None
-        self.video_filename = None
         
         self.video_pause = True
-        self.video_loop = False
         self.video_delay = 1
         self.video_end = False
 
@@ -821,11 +820,8 @@ class CameraPage(tk.Frame):
                     self.video_image = ImageTk.PhotoImage(image=Image.fromarray(self.video_frame))
                     self.canvas.create_image(0, 0, image=self.video_image, anchor='nw')
                 except VideoRunOutOfFrame:
-                    if self.video_loop:
-                        self.replay_video()
-                    else:
-                        self.video_end = True
-                        self.pause_video()
+                    self.video_end = True
+                    self.pause_video()
                     self.end_video_recording()
                 self.after(self.video_delay, self.play_video)
             else:
@@ -844,6 +840,7 @@ class CameraPage(tk.Frame):
     def pause_video(self):
         self.video_pause = True
         self.button_pause.config(image=self.image_video_pause)
+        self.end_video_recording()
     
     def resume_video(self):
         if self.video_pause:
