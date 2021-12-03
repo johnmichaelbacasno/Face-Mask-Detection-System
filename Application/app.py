@@ -112,7 +112,7 @@ def detect_face(frame):
             color = (0, 255, 0)
             frame = cv2.rectangle(image_copy, (x, y) ,(x + w, y + h), color, 3)
             frame = cv2.putText(image_copy, 'Face', (x, y - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.8, color, 2,cv2.LINE_AA)
-            faces_count += 1
+            # faces_count += 1
         # face_detected_count = faces_count
     except Exception as e:
         print(e)
@@ -164,7 +164,7 @@ class tkinterApp(tk.Tk):
         tk.Tk.__init__(self, *args, **kwargs)
         
         self.title("Face Mask Detection System")
-        self.geometry("1000x750")
+        self.geometry("1000x725")
         self.resizable(False, False)
         
         self.container = tk.Frame(self)
