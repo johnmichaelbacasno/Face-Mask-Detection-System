@@ -407,7 +407,10 @@ class VideoPage(tk.Frame):
     
     def take_snapshot(self):
         if self.video:
-            cv2.imwrite(f"snapshots/image-{time.strftime('%Y-%m-%d-%H-%M-%S')}.jpg", cv2.cvtColor(self.video_frame, cv2.COLOR_RGB2BGR))
+            try:
+                cv2.imwrite(f"snapshots/image-{time.strftime('%Y-%m-%d-%H-%M-%S')}.jpg", cv2.cvtColor(self.video_frame, cv2.COLOR_RGB2BGR))
+            except:
+                pass
     
     def play_video(self):
         if self.video:
@@ -796,9 +799,12 @@ class ImagePage(tk.Frame):
         self.destroy()
     
     def take_snapshot(self):
-        if self.image:
-            frame = self.image.get_frame()
-            cv2.imwrite("snapshots/frame-" + time.strftime("%Y-%m-%d-%H-%M-%S") + ".jpg", cv2.cvtColor(frame, cv2.COLOR_RGB2BGR))
+        try:
+            if self.image:
+                frame = self.image.get_frame()
+                cv2.imwrite("snapshots/image-" + time.strftime("%Y-%m-%d-%H-%M-%S") + ".jpg", cv2.cvtColor(frame, cv2.COLOR_RGB2BGR))
+        except:
+            pass
     
     def display_image(self):
         if self.image:
@@ -1087,7 +1093,10 @@ class CameraPage(tk.Frame):
     
     def take_snapshot(self):
         if self.video:
-            cv2.imwrite(f"snapshots/image-{time.strftime('%Y-%m-%d-%H-%M-%S')}.jpg", cv2.cvtColor(self.video_frame, cv2.COLOR_RGB2BGR))
+            try:
+                cv2.imwrite(f"snapshots/image-{time.strftime('%Y-%m-%d-%H-%M-%S')}.jpg", cv2.cvtColor(self.video_frame, cv2.COLOR_RGB2BGR))
+            except:
+                pass
     
     def play_video(self):
         if self.video:
