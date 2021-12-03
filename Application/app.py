@@ -981,7 +981,7 @@ class CameraPage(tk.Frame):
         tk.Frame.__init__(self, parent)
         self.configure(background="#000C18")
         
-        self.video = VideoCapture('data/samples/sample_video.mp4')
+        self.video = VideoCapture(0)
         self.video_frame = None
         
         self.video_pause = True
