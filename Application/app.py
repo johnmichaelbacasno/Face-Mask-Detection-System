@@ -616,10 +616,7 @@ class VideoCapture:
         if self.vid.isOpened():
             available, frame = self.vid.read()
             if available:
-                if self.face_detection_is_enabled:
-                    frame = detect_face(frame)
-                if self.mask_detection_is_enabled:
-                    frame = detect_mask(frame)
+                
                 if self.grey_effect_is_enabled:
                     frame = grey(frame)
                 if self.negative_effect_is_enabled:
@@ -628,6 +625,10 @@ class VideoCapture:
                     frame = horizontal_flip(frame)
                 if self.vertical_flip_effect_is_enabled:
                     frame = vertical_flip(frame)
+                if self.face_detection_is_enabled:
+                    frame = detect_face(frame)
+                if self.mask_detection_is_enabled:
+                    frame = detect_mask(frame)
 
                 frame = make_square(frame)
                 frame = cv2.resize(frame, (self.width, self.height), interpolation=cv2.INTER_LINEAR)
@@ -869,10 +870,7 @@ class ImageCapture:
         
     def get_frame(self):
         frame = cv2.imread(self.source)
-        if self.face_detection_is_enabled:
-            frame = detect_face(frame)
-        if self.mask_detection_is_enabled:
-            frame = detect_mask(frame)
+        
         if self.grey_effect_is_enabled:
             frame = grey(frame)
         if self.negative_effect_is_enabled:
@@ -881,6 +879,10 @@ class ImageCapture:
             frame = horizontal_flip(frame)
         if self.vertical_flip_effect_is_enabled:
             frame = vertical_flip(frame)
+        if self.face_detection_is_enabled:
+            frame = detect_face(frame)
+        if self.mask_detection_is_enabled:
+            frame = detect_mask(frame)
 
         frame = make_square(frame)
         frame = cv2.resize(frame, (self.width, self.height), interpolation=cv2.INTER_LINEAR)
