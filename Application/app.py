@@ -164,7 +164,7 @@ class tkinterApp(tk.Tk):
         tk.Tk.__init__(self, *args, **kwargs)
         
         self.title("Face Mask Detection System")
-        self.geometry("1000x725")
+        self.geometry("1000x750")
         self.resizable(False, False)
         
         self.container = tk.Frame(self)
@@ -249,19 +249,25 @@ class MenuPage(tk.Frame):
         self.configure(background="#000C18")
         self.controller = controller
 
-        label_header = tk.Label(self, text="Choose\nInput Type", font=("Tw Cen MT", 60, "bold"), bg="#000C18", fg="#FFFFFF")
-        label_header.pack(pady=50)
+        label_title = tk.Label(self, text="FACE MASK DETECTION SYSTEM", font=("Tw Cen MT", 45, "bold"), bg="#000C18", fg="#FFFFFF")
+        label_title.pack(pady=30)
 
-        button_image = tk.Button(self, text="Image", command=lambda: controller.show_frame(ImagePage), width=12, fg="#FFFFFF", bg="#00AAEB", bd=0, activebackground="#15272F", activeforeground="#FFFFFF", font=("Tw Cen MT Condensed", 20, "bold"), relief="raised")
+        label_header = tk.Label(self, text="Choose Input Type", font=("Tw Cen MT", 30), bg="#000C18", fg="#FFFFFF")
+        label_header.pack(pady=15)
+
+        buttons = tk.Frame(self, background="#000C18")
+        buttons.pack(pady=20)
+
+        button_image = tk.Button(buttons, text="Image", command=lambda: controller.show_frame(ImagePage), width=12, fg="#FFFFFF", bg="#00AAEB", bd=0, activebackground="#15272F", activeforeground="#FFFFFF", font=("Tw Cen MT Condensed", 20, "bold"), relief="raised")
         button_image.pack(pady=20)
         
-        button_video = tk.Button(self, text="Video", command=lambda: controller.show_frame(VideoPage), width=12, fg="#FFFFFF", bg="#00AAEB", bd=0, activebackground="#15272F", activeforeground="#FFFFFF", font=("Tw Cen MT Condensed", 20, "bold"), relief="raised")
+        button_video = tk.Button(buttons, text="Video", command=lambda: controller.show_frame(VideoPage), width=12, fg="#FFFFFF", bg="#00AAEB", bd=0, activebackground="#15272F", activeforeground="#FFFFFF", font=("Tw Cen MT Condensed", 20, "bold"), relief="raised")
         button_video.pack(pady=20)
         
-        button_camera = tk.Button(self, text="Camera", command=self.browse_camera_page, width=12, fg="#FFFFFF", bg="#00AAEB", bd=0, activebackground="#15272F", activeforeground="#FFFFFF", font=("Tw Cen MT Condensed", 20, "bold"), relief="raised")
+        button_camera = tk.Button(buttons, text="Camera", command=self.browse_camera_page, width=12, fg="#FFFFFF", bg="#00AAEB", bd=0, activebackground="#15272F", activeforeground="#FFFFFF", font=("Tw Cen MT Condensed", 20, "bold"), relief="raised")
         button_camera.pack(pady=20)
 
-        button_quit = tk.Button(self, text="Quit", command=lambda: AskQuit(tk.Toplevel(self), self.controller, "Quit"), width=12, fg="#FFFFFF", bg="#E62A32", bd=0, activebackground="#15272F", activeforeground="#FFFFFF", font=("Tw Cen MT Condensed", 20, "bold"), relief="raised")
+        button_quit = tk.Button(buttons, text="Quit", command=lambda: AskQuit(tk.Toplevel(self), self.controller, "Quit"), width=12, fg="#FFFFFF", bg="#E62A32", bd=0, activebackground="#15272F", activeforeground="#FFFFFF", font=("Tw Cen MT Condensed", 20, "bold"), relief="raised")
         button_quit.pack(pady=20)
 
     def browse_camera_page(self):
