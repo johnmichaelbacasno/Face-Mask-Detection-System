@@ -106,21 +106,21 @@ def detect_face(frame):
     global size, face_detected_count
     try:
         image_copy = frame.copy()
-        # faces_count = 0
+        faces_count = 0
         for coor in get_detection(image_copy):
             x, y, w, h = (value * size for value in coor)
             color = (0, 255, 0)
             frame = cv2.rectangle(image_copy, (x, y) ,(x + w, y + h), color, 3)
             frame = cv2.putText(image_copy, 'Face', (x, y - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.8, color, 2,cv2.LINE_AA)
-            # faces_count += 1
-        # face_detected_count = faces_count
+            faces_count += 1
+        face_detected_count = faces_count
     except Exception as e:
         print(e)
     
     return frame
 
 def detect_mask(frame):
-    # global size, face_detected_count, masked_detected_count, umasked_detected_count
+    global size, face_detected_count, masked_detected_count, umasked_detected_count
     try:
         CATEGORIES = ['Mask', 'No Mask']
         image_copy = frame.copy()
@@ -140,19 +140,19 @@ def detect_mask(frame):
 
             if index == 0:
                 color = (0, 255, 0)
-                # mask_count += 1
+                mask_count += 1
             else:
                 color = (0, 0, 255)
-                # unmasked_count += 1
+                unmasked_count += 1
             
             frame = cv2.rectangle(frame, (x, y), (x + w, y + h), color, 3)
             frame = cv2.putText(frame, f"{response} {format(prediction[0][0]*100, '.2f')}%", (x, y - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.8, color, 2, cv2.LINE_AA)
 
-            # faces_count += 1
+            faces_count += 1
         
-        # face_detected_count = faces_count
-        # masked_detected_count = mask_count
-        # umasked_detected_count = unmasked_count
+        face_detected_count = faces_count
+        masked_detected_count = mask_count
+        umasked_detected_count = unmasked_count
     
     except:
         pass
@@ -353,31 +353,56 @@ class VideoPage(tk.Frame):
         self.button_back = tk.Button(self, text="Back", command=self.end_page, width=12, fg="#FFFFFF", bg="#E62A32", bd=0, activebackground="#15272F", activeforeground="#FFFFFF", font=("Tw Cen MT Condensed", 12, "bold"), relief="raised")
         self.button_back.place(bordermode="outside", x=35, y=20)
 
-        # self.info_labels()
-
-    '''
-    def info_labels(self):
         self.info = tk.Frame(self, background="#000C18")
-        self.info.place(bordermode="outside", x=800, y=20)
+        self.info.place(bordermode="outside", x=800, y=15)
 
-        self.face_detected = tk.Label(self.info, text=f"Face Detected: {face_detected_count}",  font=("Segoe UI Black", 10), bg="#000C18", fg="#FFFFFF")
-        self.face_detected.grid(row=0, column=0, padx=15, pady=15, sticky="W")
+        self.label_face_detected = tk.Label(self.info, text="Face Detected",  font=("Tw Cen MT Condensed", 12), bg="#000C18", fg="#FFFFFF")
+        self.label_face_detected.grid(row=1, column=0, padx=5, pady=5, sticky="W")
+
+        self.count_face_detected = tk.Label(self.info, text=0,  font=("Tw Cen MT Condensed", 12, "bold"), bg="#000C18", fg="#FFFFFF")
+        self.count_face_detected.grid(row=1, column=1, padx=5, pady=5, sticky="W")
         
-        self.masked_detected = tk.Label(self.info, text=f"Masked Detected: {masked_detected_count}", font=("Segoe UI Black", 10), bg="#000C18", fg="#FFFFFF")
-        self.masked_detected.grid(row=1, column=0, padx=15, pady=15, sticky="W")
+        self.label_masked_detected = tk.Label(self.info, text="Masked Detected", font=("Tw Cen MT Condensed", 12), bg="#000C18", fg="#FFFFFF")
+        self.label_masked_detected.grid(row=2, column=0, padx=5, pady=5, sticky="W")
 
-        self.unmasked_detected = tk.Label(self.info, text=f"Unmasked Detected: {umasked_detected_count}", font=("Segoe UI Black", 10), bg="#000C18", fg="#FFFFFF")
-        self.unmasked_detected.grid(row=2, column=0, padx=15, pady=15, sticky="W")
+        self.count_masked_detected = tk.Label(self.info, text=0, font=("Tw Cen MT Condensed", 12, "bold"), bg="#000C18", fg="#FFFFFF")
+        self.count_masked_detected.grid(row=2, column=1, padx=5, pady=5, sticky="W")
+
+        self.label_unmasked_detected = tk.Label(self.info, text="Unmasked Detected", font=("Tw Cen MT Condensed", 12), bg="#000C18", fg="#FFFFFF")
+        self.label_unmasked_detected.grid(row=3, column=0, padx=5, pady=5, sticky="W")
+
+        self.count_unmasked_detected = tk.Label(self.info, text=0, font=("Tw Cen MT Condensed", 12, "bold"), bg="#000C18", fg="#FFFFFF")
+        self.count_unmasked_detected.grid(row=3, column=1, padx=5, pady=5, sticky="W")
+
+        self.info_time = tk.Frame(self, background="#000C18")
+        self.info_time.place(bordermode="outside", x=800, y=450)
+        
+        self.label_date = tk.Label(self.info_time, text=time.strftime('%B %d, %Y'),  font=("Tw Cen MT Condensed", 15), bg="#000C18", fg="#FFFFFF")
+        self.label_date.grid(row=0, column=0, padx=5, pady=3, sticky="W")
+
+        self.label_time = tk.Label(self.info_time, text=time.strftime('%H:%M %p'),  font=("Tw Cen MT Condensed", 13), bg="#000C18", fg="#FFFFFF")
+        self.label_time.grid(row=1, column=0, padx=5, pady=3, sticky="W")
+
+        self.update_time()
+    
+    def update_time(self):
+        self.label_date.configure(text=time.strftime('%B %d, %Y'))
+        self.label_time.configure(text=time.strftime('%H:%M:%S %p'))
+        self.label_time.after(1000, self.update_time)
+    
+    def update_info(self):
+        self.count_face_detected.configure(text=face_detected_count)
+        self.count_masked_detected.configure(text=masked_detected_count)
+        self.count_unmasked_detected.configure(text=umasked_detected_count)
     
     def reset_count(self):
         global face_detected_count, masked_detected_count, umasked_detected_count
         face_detected_count = 0
         masked_detected_count = 0
         umasked_detected_count = 0
-    '''
     
     def end_page(self):
-        # self.reset_count()
+        self.reset_count()
         self.destroy()
     
     def take_snapshot(self):
@@ -386,7 +411,7 @@ class VideoPage(tk.Frame):
     
     def play_video(self):
         if self.video:
-            # self.info_labels()
+            self.update_info()
             if not self.video_pause:
                 try:
                     
@@ -462,7 +487,7 @@ class VideoPage(tk.Frame):
         
         if self.video_filename:
             self.video = VideoCapture(self.video_filename)
-            # self.reset_count()
+            self.reset_count()
             self.end_face_detection()
             self.end_mask_detection()
             self.end_grey_video()
@@ -504,6 +529,7 @@ class VideoPage(tk.Frame):
     def end_face_detection(self):
         self.video.face_detection_is_enabled = False
         self.button_face_detect.config(fg="#151515", bg="#FFFFFF")
+        self.reset_count()
 
     # Mask Detection
 
@@ -522,6 +548,7 @@ class VideoPage(tk.Frame):
     def end_mask_detection(self):
         self.video.mask_detection_is_enabled = False
         self.button_mask_detect.config(fg="#151515", bg="#FFFFFF")
+        self.reset_count()
     
     # Grey Video Effect
 
@@ -715,6 +742,56 @@ class ImagePage(tk.Frame):
         self.button_back = tk.Button(self, text="Back", command=self.end_page, width=12, fg="#FFFFFF", bg="#E62A32", bd=0, activebackground="#15272F", activeforeground="#FFFFFF", font=("Tw Cen MT Condensed", 12, "bold"), relief="raised")
         self.button_back.place(bordermode="outside", x=35, y=20)
 
+        self.display_info()
+
+        self.info_time = tk.Frame(self, background="#000C18")
+        self.info_time.place(bordermode="outside", x=800, y=450)
+        
+        self.label_date = tk.Label(self.info_time, text=time.strftime('%B %d, %Y'),  font=("Tw Cen MT Condensed", 15), bg="#000C18", fg="#FFFFFF")
+        self.label_date.grid(row=0, column=0, padx=5, pady=3, sticky="W")
+
+        self.label_time = tk.Label(self.info_time, text=time.strftime('%H:%M %p'),  font=("Tw Cen MT Condensed", 13), bg="#000C18", fg="#FFFFFF")
+        self.label_time.grid(row=1, column=0, padx=5, pady=3, sticky="W")
+
+        self.update_time()
+    
+    def update_time(self):
+        self.label_date.configure(text=time.strftime('%B %d, %Y'))
+        self.label_time.configure(text=time.strftime('%H:%M:%S %p'))
+        self.label_time.after(1000, self.update_time)
+    
+    def display_info(self):
+        self.info = tk.Frame(self, background="#000C18")
+        self.info.place(bordermode="outside", x=800, y=15)
+
+        self.label_face_detected = tk.Label(self.info, text="Face Detected",  font=("Tw Cen MT Condensed", 12), bg="#000C18", fg="#FFFFFF")
+        self.label_face_detected.grid(row=1, column=0, padx=5, pady=5, sticky="W")
+
+        self.count_face_detected = tk.Label(self.info, text=face_detected_count,  font=("Tw Cen MT Condensed", 12, "bold"), bg="#000C18", fg="#FFFFFF")
+        self.count_face_detected.grid(row=1, column=1, padx=5, pady=5, sticky="W")
+        
+        self.label_masked_detected = tk.Label(self.info, text="Masked Detected", font=("Tw Cen MT Condensed", 12), bg="#000C18", fg="#FFFFFF")
+        self.label_masked_detected.grid(row=2, column=0, padx=5, pady=5, sticky="W")
+
+        self.count_masked_detected = tk.Label(self.info, text=masked_detected_count, font=("Tw Cen MT Condensed", 12, "bold"), bg="#000C18", fg="#FFFFFF")
+        self.count_masked_detected.grid(row=2, column=1, padx=5, pady=5, sticky="W")
+
+        self.label_unmasked_detected = tk.Label(self.info, text="Unmasked Detected", font=("Tw Cen MT Condensed", 12), bg="#000C18", fg="#FFFFFF")
+        self.label_unmasked_detected.grid(row=3, column=0, padx=5, pady=5, sticky="W")
+
+        self.count_unmasked_detected = tk.Label(self.info, text=umasked_detected_count, font=("Tw Cen MT Condensed", 12, "bold"), bg="#000C18", fg="#FFFFFF")
+        self.count_unmasked_detected.grid(row=3, column=1, padx=5, pady=5, sticky="W")
+    
+    def update_info(self):
+        self.info.destroy()
+        self.display_info()
+    
+    def reset_count(self):
+        global face_detected_count, masked_detected_count, umasked_detected_count
+        face_detected_count = 0
+        masked_detected_count = 0
+        umasked_detected_count = 0
+
     def end_page(self):
         self.destroy()
     
@@ -749,10 +826,12 @@ class ImagePage(tk.Frame):
     def start_face_detection(self):
         self.image.face_detection_is_enabled = True
         self.button_face_detect.config(fg="#FFFFFF", bg="#00AAEB")
+        self.update_info()
     
     def end_face_detection(self):
         self.image.face_detection_is_enabled = False
         self.button_face_detect.config(fg="#151515", bg="#FFFFFF")
+        self.reset_count()
 
     # Mask Detection
 
@@ -768,10 +847,12 @@ class ImagePage(tk.Frame):
     def start_mask_detection(self):
         self.image.mask_detection_is_enabled = True
         self.button_mask_detect.config(fg="#FFFFFF", bg="#00AAEB")
+        self.update_info()
     
     def end_mask_detection(self):
         self.image.mask_detection_is_enabled = False
         self.button_mask_detect.config(fg="#151515", bg="#FFFFFF")
+        self.reset_count()
     
     # Grey Image Effect
 
@@ -894,7 +975,7 @@ class CameraPage(tk.Frame):
         tk.Frame.__init__(self, parent)
         self.configure(background="#000C18")
         
-        self.video = VideoCapture(0)
+        self.video = VideoCapture('data/samples/sample_video.mp4')
         self.video_frame = None
         
         self.video_pause = True
@@ -952,21 +1033,47 @@ class CameraPage(tk.Frame):
         self.button_back = tk.Button(self, text="Back", command=self.end_page, width=12, fg="#FFFFFF", bg="#E62A32", bd=0, activebackground="#15272F", activeforeground="#FFFFFF", font=("Tw Cen MT Condensed", 12, "bold"), relief="raised")
         self.button_back.place(bordermode="outside", x=35, y=20)
 
-        # self.info_labels()
-
-    '''
-    def info_labels(self):
         self.info = tk.Frame(self, background="#000C18")
-        self.info.place(bordermode="outside", x=800, y=20)
+        self.info.place(bordermode="outside", x=800, y=15)
 
-        self.face_detected = tk.Label(self.info, text=f"Face Detected: {face_detected_count}",  font=("Segoe UI Black", 10), bg="#000C18", fg="#FFFFFF")
-        self.face_detected.grid(row=0, column=0, padx=15, pady=15, sticky="W")
+        self.label_face_detected = tk.Label(self.info, text="Face Detected",  font=("Tw Cen MT Condensed", 12), bg="#000C18", fg="#FFFFFF")
+        self.label_face_detected.grid(row=1, column=0, padx=5, pady=5, sticky="W")
+
+        self.count_face_detected = tk.Label(self.info, text=0,  font=("Tw Cen MT Condensed", 12, "bold"), bg="#000C18", fg="#FFFFFF")
+        self.count_face_detected.grid(row=1, column=1, padx=5, pady=5, sticky="W")
         
-        self.masked_detected = tk.Label(self.info, text=f"Masked Detected: {masked_detected_count}", font=("Segoe UI Black", 10), bg="#000C18", fg="#FFFFFF")
-        self.masked_detected.grid(row=1, column=0, padx=15, pady=15, sticky="W")
+        self.label_masked_detected = tk.Label(self.info, text="Masked Detected", font=("Tw Cen MT Condensed", 12), bg="#000C18", fg="#FFFFFF")
+        self.label_masked_detected.grid(row=2, column=0, padx=5, pady=5, sticky="W")
 
-        self.unmasked_detected = tk.Label(self.info, text=f"Unmasked Detected: {umasked_detected_count}", font=("Segoe UI Black", 10), bg="#000C18", fg="#FFFFFF")
-        self.unmasked_detected.grid(row=2, column=0, padx=15, pady=15, sticky="W")
+        self.count_masked_detected = tk.Label(self.info, text=0, font=("Tw Cen MT Condensed", 12, "bold"), bg="#000C18", fg="#FFFFFF")
+        self.count_masked_detected.grid(row=2, column=1, padx=5, pady=5, sticky="W")
+
+        self.label_unmasked_detected = tk.Label(self.info, text="Unmasked Detected", font=("Tw Cen MT Condensed", 12), bg="#000C18", fg="#FFFFFF")
+        self.label_unmasked_detected.grid(row=3, column=0, padx=5, pady=5, sticky="W")
+
+        self.count_unmasked_detected = tk.Label(self.info, text=0, font=("Tw Cen MT Condensed", 12, "bold"), bg="#000C18", fg="#FFFFFF")
+        self.count_unmasked_detected.grid(row=3, column=1, padx=5, pady=5, sticky="W")
+
+        self.info_time = tk.Frame(self, background="#000C18")
+        self.info_time.place(bordermode="outside", x=800, y=450)
+        
+        self.label_date = tk.Label(self.info_time, text=time.strftime('%B %d, %Y'),  font=("Tw Cen MT Condensed", 15), bg="#000C18", fg="#FFFFFF")
+        self.label_date.grid(row=0, column=0, padx=5, pady=3, sticky="W")
+
+        self.label_time = tk.Label(self.info_time, text=time.strftime('%H:%M %p'),  font=("Tw Cen MT Condensed", 13), bg="#000C18", fg="#FFFFFF")
+        self.label_time.grid(row=1, column=0, padx=5, pady=3, sticky="W")
+
+        self.update_time()
+    
+    def update_time(self):
+        self.label_date.configure(text=time.strftime('%B %d, %Y'))
+        self.label_time.configure(text=time.strftime('%H:%M:%S %p'))
+        self.label_time.after(1000, self.update_time)
+    
+    def update_info(self):
+        self.count_face_detected.configure(text=face_detected_count)
+        self.count_masked_detected.configure(text=masked_detected_count)
+        self.count_unmasked_detected.configure(text=umasked_detected_count)
     
     def reset_count(self):
         global face_detected_count, masked_detected_count, umasked_detected_count
@@ -974,10 +1081,8 @@ class CameraPage(tk.Frame):
         masked_detected_count = 0
         umasked_detected_count = 0
     
-    '''
-    
     def end_page(self):
-        # self.reset_count()
+        self.reset_count()
         self.destroy()
     
     def take_snapshot(self):
@@ -986,7 +1091,7 @@ class CameraPage(tk.Frame):
     
     def play_video(self):
         if self.video:
-            # self.info_labels()
+            self.update_info()
             if not self.video_pause:
                 try:
                     self.video_frame = self.video.get_frame()
@@ -1001,6 +1106,13 @@ class CameraPage(tk.Frame):
                 if self.video_end:
                     pass
                 else:
+                    self.reset_count()
+                    self.end_face_detection()
+                    self.end_mask_detection()
+                    self.end_grey_video()
+                    self.end_negative_video()
+                    self.end_horizontal_flip_video()
+                    self.end_vertical_flip_video()
                     self.canvas.create_image(0, 0, image=self.image_video_blank, anchor='nw')
     
     def switch_play(self):
@@ -1040,7 +1152,7 @@ class CameraPage(tk.Frame):
    # Face Detection
     
     def face_detection_video(self):
-        if self.video:
+        if self.video and not self.video_pause:
             if self.video.face_detection_is_enabled:
                 self.end_face_detection()
             else:
@@ -1054,11 +1166,12 @@ class CameraPage(tk.Frame):
     def end_face_detection(self):
         self.video.face_detection_is_enabled = False
         self.button_face_detect.config(fg="#151515", bg="#FFFFFF")
+        self.reset_count()
 
     # Mask Detection
 
     def mask_detection_video(self):
-        if self.video:
+        if self.video and not self.video_pause:
             if self.video.mask_detection_is_enabled:
                 self.end_mask_detection()
             else:
@@ -1072,11 +1185,12 @@ class CameraPage(tk.Frame):
     def end_mask_detection(self):
         self.video.mask_detection_is_enabled = False
         self.button_mask_detect.config(fg="#151515", bg="#FFFFFF")
+        self.reset_count()
     
     # Grey Video Effect
 
     def grey_video(self):
-        if self.video:
+        if self.video and not self.video_pause:
             if self.video.grey_effect_is_enabled:
                 self.end_grey_video()
             else:
@@ -1093,7 +1207,7 @@ class CameraPage(tk.Frame):
     # Negative Video Effect
 
     def negative_video(self):
-        if self.video:
+        if self.video and not self.video_pause:
             if self.video.negative_effect_is_enabled:
                 self.end_negative_video()
             else:
@@ -1110,7 +1224,7 @@ class CameraPage(tk.Frame):
     # Horizontal Flip Video Effect
     
     def horizontal_flip_video(self):
-        if self.video:
+        if self.video and not self.video_pause:
             if self.video.horizontal_flip_effect_is_enabled:
                 self.end_horizontal_flip_video()
             else:
@@ -1127,7 +1241,7 @@ class CameraPage(tk.Frame):
     # Vetical Flip Video Effect
     
     def vertical_flip_video(self):
-        if self.video:
+        if self.video and not self.video_pause:
             if self.video.vertical_flip_effect_is_enabled:
                 self.end_vertical_flip_video()
             else:
