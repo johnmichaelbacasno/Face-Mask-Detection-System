@@ -751,7 +751,26 @@ class ImagePage(tk.Frame):
         self.button_back = tk.Button(self, text="Back", command=self.end_page, width=12, fg="#FFFFFF", bg="#E62A32", bd=0, activebackground="#15272F", activeforeground="#FFFFFF", font=("Tw Cen MT Condensed", 12, "bold"), relief="raised")
         self.button_back.place(bordermode="outside", x=35, y=20)
 
-        self.display_info()
+        self.info = tk.Frame(self, background="#000C18")
+        self.info.place(bordermode="outside", x=800, y=15)
+
+        self.label_face_detected = tk.Label(self.info, text="Face Detected",  font=("Tw Cen MT Condensed", 12), bg="#000C18", fg="#FFFFFF")
+        self.label_face_detected.grid(row=1, column=0, padx=5, pady=5, sticky="W")
+
+        self.count_face_detected = tk.Label(self.info, text=0,  font=("Tw Cen MT Condensed", 12, "bold"), bg="#000C18", fg="#FFFFFF")
+        self.count_face_detected.grid(row=1, column=1, padx=5, pady=5, sticky="W")
+        
+        self.label_masked_detected = tk.Label(self.info, text="Masked Detected", font=("Tw Cen MT Condensed", 12), bg="#000C18", fg="#FFFFFF")
+        self.label_masked_detected.grid(row=2, column=0, padx=5, pady=5, sticky="W")
+
+        self.count_masked_detected = tk.Label(self.info, text=0, font=("Tw Cen MT Condensed", 12, "bold"), bg="#000C18", fg="#FFFFFF")
+        self.count_masked_detected.grid(row=2, column=1, padx=5, pady=5, sticky="W")
+
+        self.label_unmasked_detected = tk.Label(self.info, text="Unmasked Detected", font=("Tw Cen MT Condensed", 12), bg="#000C18", fg="#FFFFFF")
+        self.label_unmasked_detected.grid(row=3, column=0, padx=5, pady=5, sticky="W")
+
+        self.count_unmasked_detected = tk.Label(self.info, text=0, font=("Tw Cen MT Condensed", 12, "bold"), bg="#000C18", fg="#FFFFFF")
+        self.count_unmasked_detected.grid(row=3, column=1, padx=5, pady=5, sticky="W")
 
         self.info_time = tk.Frame(self, background="#000C18")
         self.info_time.place(bordermode="outside", x=800, y=450)
@@ -769,31 +788,10 @@ class ImagePage(tk.Frame):
         self.label_time.configure(text=time.strftime('%H:%M:%S %p'))
         self.label_time.after(1000, self.update_time)
     
-    def display_info(self):
-        self.info = tk.Frame(self, background="#000C18")
-        self.info.place(bordermode="outside", x=800, y=15)
-
-        self.label_face_detected = tk.Label(self.info, text="Face Detected",  font=("Tw Cen MT Condensed", 12), bg="#000C18", fg="#FFFFFF")
-        self.label_face_detected.grid(row=1, column=0, padx=5, pady=5, sticky="W")
-
-        self.count_face_detected = tk.Label(self.info, text=face_detected_count,  font=("Tw Cen MT Condensed", 12, "bold"), bg="#000C18", fg="#FFFFFF")
-        self.count_face_detected.grid(row=1, column=1, padx=5, pady=5, sticky="W")
-        
-        self.label_masked_detected = tk.Label(self.info, text="Masked Detected", font=("Tw Cen MT Condensed", 12), bg="#000C18", fg="#FFFFFF")
-        self.label_masked_detected.grid(row=2, column=0, padx=5, pady=5, sticky="W")
-
-        self.count_masked_detected = tk.Label(self.info, text=masked_detected_count, font=("Tw Cen MT Condensed", 12, "bold"), bg="#000C18", fg="#FFFFFF")
-        self.count_masked_detected.grid(row=2, column=1, padx=5, pady=5, sticky="W")
-
-        self.label_unmasked_detected = tk.Label(self.info, text="Unmasked Detected", font=("Tw Cen MT Condensed", 12), bg="#000C18", fg="#FFFFFF")
-        self.label_unmasked_detected.grid(row=3, column=0, padx=5, pady=5, sticky="W")
-
-        self.count_unmasked_detected = tk.Label(self.info, text=umasked_detected_count, font=("Tw Cen MT Condensed", 12, "bold"), bg="#000C18", fg="#FFFFFF")
-        self.count_unmasked_detected.grid(row=3, column=1, padx=5, pady=5, sticky="W")
-    
     def update_info(self):
-        self.info.destroy()
-        self.display_info()
+        self.count_face_detected.configure(text=face_detected_count)
+        self.count_masked_detected.configure(text=masked_detected_count)
+        self.count_unmasked_detected.configure(text=umasked_detected_count)
     
     def reset_count(self):
         global face_detected_count, masked_detected_count, umasked_detected_count
@@ -817,6 +815,7 @@ class ImagePage(tk.Frame):
             frame = self.image.get_frame()
             self.photo = ImageTk.PhotoImage(image=Image.fromarray(frame))
             self.canvas.create_image(0, 0, image=self.photo, anchor='nw')
+            self.update_info()
     
     def open_file(self):
         self.image_filename = filedialog.askopenfilename(title="Open file", filetypes=(("JPG files", "*.jpg"), ("PNG files", "*.png")))
@@ -838,7 +837,6 @@ class ImagePage(tk.Frame):
     def start_face_detection(self):
         self.image.face_detection_is_enabled = True
         self.button_face_detect.config(fg="#FFFFFF", bg="#00AAEB")
-        self.update_info()
     
     def end_face_detection(self):
         self.image.face_detection_is_enabled = False
@@ -855,11 +853,10 @@ class ImagePage(tk.Frame):
                 self.end_face_detection()
                 self.start_mask_detection()
         self.display_image()
-    
+
     def start_mask_detection(self):
         self.image.mask_detection_is_enabled = True
         self.button_mask_detect.config(fg="#FFFFFF", bg="#00AAEB")
-        self.update_info()
     
     def end_mask_detection(self):
         self.image.mask_detection_is_enabled = False
