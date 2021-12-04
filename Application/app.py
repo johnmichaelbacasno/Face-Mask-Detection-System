@@ -293,46 +293,46 @@ class VideoPage(tk.Frame):
         self.video_delay = 1
         self.video_end = False
 
-        self.image_video_pause = ImageTk.PhotoImage(Image.open("assets/images/video_pause.png"))
-        self.image_video_play = ImageTk.PhotoImage(Image.open("assets/images/video_play.png"))
-        self.image_video_loop_off = ImageTk.PhotoImage(Image.open("assets/images/video_loop_off.png"))
-        self.image_video_loop_on = ImageTk.PhotoImage(Image.open("assets/images/video_loop_on.png"))
-        self.image_video_replay = ImageTk.PhotoImage(Image.open("assets/images/video_replay.png"))
-        self.image_video_record_off = ImageTk.PhotoImage(Image.open("assets/images/video_record_off.png"))
-        self.image_video_record_on = ImageTk.PhotoImage(Image.open("assets/images/video_record_on.png"))
-        self.image_file_open = ImageTk.PhotoImage(Image.open("assets/images/file_open.png"))
-        self.image_video_snapshot = ImageTk.PhotoImage(Image.open("assets/images/video_snapshot.png"))
-        self.image_video_blank = ImageTk.PhotoImage(Image.open("assets/images/video_blank.png"))
+        self.icon_pause = ImageTk.PhotoImage(Image.open("assets/images/video_pause.png"))
+        self.icon_play = ImageTk.PhotoImage(Image.open("assets/images/video_play.png"))
+        self.icon_loop_off = ImageTk.PhotoImage(Image.open("assets/images/video_loop_off.png"))
+        self.icon_loop_on = ImageTk.PhotoImage(Image.open("assets/images/video_loop_on.png"))
+        self.icon_replay = ImageTk.PhotoImage(Image.open("assets/images/video_replay.png"))
+        self.icon_record_off = ImageTk.PhotoImage(Image.open("assets/images/video_record_off.png"))
+        self.icon_record_on = ImageTk.PhotoImage(Image.open("assets/images/video_record_on.png"))
+        self.icon_open_file = ImageTk.PhotoImage(Image.open("assets/images/file_open.png"))
+        self.icon_snapshot = ImageTk.PhotoImage(Image.open("assets/images/video_snapshot.png"))
+        self.icon_video_blank = ImageTk.PhotoImage(Image.open("assets/images/video_blank.png"))
         
         self.canvas = tk.Canvas(self, width=498, height=498)
         self.canvas.pack(anchor="center", padx=20, pady=20)
-        self.canvas.create_image(0, 0, image=self.image_video_blank, anchor='nw')
+        self.canvas.create_image(0, 0, image=self.icon_video_blank, anchor='nw')
         
         '''
         self.canvas = tk.Label(self, width=500, height=500)
         self.canvas.pack(anchor="center", padx=20, pady=20)
-        self.canvas.configure(image=self.image_video_blank, anchor='nw')
+        self.canvas.configure(image=self.icon_video_blank, anchor='nw')
         '''
 
         self.video_buttons = tk.Frame(self, background="#000C18")
         self.video_buttons.pack()
 
-        self.button_pause = tk.Button(self.video_buttons, image=self.image_video_pause, command=self.switch_play, bd=0, background="#000C18", activebackground="#000C18")
+        self.button_pause = tk.Button(self.video_buttons, image=self.icon_pause, command=self.switch_play, bd=0, background="#000C18", activebackground="#000C18")
         self.button_pause.grid(row=1, column=3, padx=15, pady=15)
 
-        self.button_loop = tk.Button(self.video_buttons, image=self.image_video_loop_off, command=self.switch_loop, bd=0, background="#000C18", activebackground="#000C18")
+        self.button_loop = tk.Button(self.video_buttons, image=self.icon_loop_off, command=self.switch_loop, bd=0, background="#000C18", activebackground="#000C18")
         self.button_loop.grid(row=1, column=2, padx=15, pady=15)
 
-        self.button_repeat = tk.Button(self.video_buttons, image=self.image_video_replay, command=self.replay_video, bd=0, background="#000C18", activebackground="#000C18")
+        self.button_repeat = tk.Button(self.video_buttons, image=self.icon_replay, command=self.replay_video, bd=0, background="#000C18", activebackground="#000C18")
         self.button_repeat.grid(row=1, column=1, padx=15, pady=15)
 
-        self.button_record = tk.Button(self.video_buttons, image=self.image_video_record_off, command=self.video_record, bd=0, background="#000C18", activebackground="#000C18")
+        self.button_record = tk.Button(self.video_buttons, image=self.icon_record_off, command=self.video_record, bd=0, background="#000C18", activebackground="#000C18")
         self.button_record.grid(row=1, column=4, padx=15, pady=15)
 
-        self.button_snapshot = tk.Button(self.video_buttons, image=self.image_video_snapshot, command=self.take_snapshot, bd=0, background="#000C18", activebackground="#000C18")
+        self.button_snapshot = tk.Button(self.video_buttons, image=self.icon_snapshot, command=self.take_snapshot, bd=0, background="#000C18", activebackground="#000C18")
         self.button_snapshot.grid(row=1, column=5, padx=15, pady=15)
 
-        self.button_open = tk.Button(self.video_buttons, image=self.image_file_open, command=self.open_file, bd=0, background="#000C18", activebackground="#000C18")
+        self.button_open = tk.Button(self.video_buttons, image=self.icon_open_file, command=self.open_file, bd=0, background="#000C18", activebackground="#000C18")
         self.button_open.grid(row=1, column=6, padx=15, pady=15)
 
         self.video_button_effects = tk.Frame(self, background="#000C18")
@@ -446,7 +446,7 @@ class VideoPage(tk.Frame):
                 if self.video_end:
                     pass
                 else:
-                    # self.canvas.create_image(0, 0, image=self.image_video_blank, anchor='nw')
+                    # self.canvas.create_image(0, 0, image=self.icon_video_blank, anchor='nw')
                     pass
     
     def switch_loop(self):
@@ -458,11 +458,11 @@ class VideoPage(tk.Frame):
     
     def start_video_loop(self):
         self.video_loop = True
-        self.button_loop.config(image=self.image_video_loop_on)
+        self.button_loop.config(image=self.icon_loop_on)
 
     def end_video_loop(self):
         self.video_loop = False
-        self.button_loop.config(image=self.image_video_loop_off)
+        self.button_loop.config(image=self.icon_loop_off)
     
     def switch_play(self):
         if self.video:
@@ -473,12 +473,12 @@ class VideoPage(tk.Frame):
     
     def pause_video(self):
         self.video_pause = True
-        self.button_pause.config(image=self.image_video_pause)
+        self.button_pause.config(image=self.icon_pause)
     
     def resume_video(self):
         if self.video_pause:
             self.video_pause = False
-            self.button_pause.config(image=self.image_video_play)
+            self.button_pause.config(image=self.icon_play)
             self.play_video()
 
     def replay_video(self):
@@ -514,12 +514,12 @@ class VideoPage(tk.Frame):
     
     def start_video_recording(self):
         self.video.recording = True
-        self.button_record.config(image=self.image_video_record_on)
+        self.button_record.config(image=self.icon_record_on)
         self.video.record_video()
 
     def end_video_recording(self):
         self.video.recording = False
-        self.button_record.config(image=self.image_video_record_off)
+        self.button_record.config(image=self.icon_record_off)
 
     # Face Detection
     
@@ -706,25 +706,25 @@ class ImagePage(tk.Frame):
 
         self.image = None
 
-        self.image_video_replay = ImageTk.PhotoImage(Image.open("assets/images/video_replay.png"))
-        self.image_video_snapshot = ImageTk.PhotoImage(Image.open("assets/images/video_snapshot.png"))
-        self.image_file_open = ImageTk.PhotoImage(Image.open("assets/images/file_open.png"))
-        self.image_video_blank = ImageTk.PhotoImage(Image.open("assets/images/image_blank.png"))
+        self.icon_replay = ImageTk.PhotoImage(Image.open("assets/images/video_replay.png"))
+        self.icon_snapshot = ImageTk.PhotoImage(Image.open("assets/images/video_snapshot.png"))
+        self.icon_open_file = ImageTk.PhotoImage(Image.open("assets/images/file_open.png"))
+        self.icon_video_blank = ImageTk.PhotoImage(Image.open("assets/images/image_blank.png"))
         
         self.canvas = tk.Canvas(self, width=498, height=498)
         self.canvas.pack(anchor="center", padx=20, pady=20)
-        self.canvas.create_image(0, 0, image=self.image_video_blank, anchor='nw')
+        self.canvas.create_image(0, 0, image=self.icon_video_blank, anchor='nw')
         
         self.image_buttons = tk.Frame(self, background="#000C18")
         self.image_buttons.pack()
 
-        self.button_repeat = tk.Button(self.image_buttons, image=self.image_video_replay, command=self.restore_image, bd=0, background="#000C18", activebackground="#000C18")
+        self.button_repeat = tk.Button(self.image_buttons, image=self.icon_replay, command=self.restore_image, bd=0, background="#000C18", activebackground="#000C18")
         self.button_repeat.grid(row=1, column=1, padx=15, pady=15)
 
-        self.button_snapshot = tk.Button(self.image_buttons, image=self.image_video_snapshot, command=self.take_snapshot, bd=0, background="#000C18", activebackground="#000C18")
+        self.button_snapshot = tk.Button(self.image_buttons, image=self.icon_snapshot, command=self.take_snapshot, bd=0, background="#000C18", activebackground="#000C18")
         self.button_snapshot.grid(row=1, column=5, padx=15, pady=15)
 
-        self.button_open = tk.Button(self.image_buttons, image=self.image_file_open, command=self.open_file, bd=0, background="#000C18", activebackground="#000C18")
+        self.button_open = tk.Button(self.image_buttons, image=self.icon_open_file, command=self.open_file, bd=0, background="#000C18", activebackground="#000C18")
         self.button_open.grid(row=1, column=6, padx=15, pady=15)
         
         self.image_button_effects = tk.Frame(self, background="#000C18")
@@ -991,31 +991,31 @@ class CameraPage(tk.Frame):
         self.video_delay = 1
         self.video_end = False
 
-        self.image_video_pause = ImageTk.PhotoImage(Image.open("assets/images/video_camera_off.png"))
-        self.image_video_play = ImageTk.PhotoImage(Image.open("assets/images/video_camera_on.png"))
-        self.image_video_loop_off = ImageTk.PhotoImage(Image.open("assets/images/video_loop_off.png"))
-        self.image_video_loop_on = ImageTk.PhotoImage(Image.open("assets/images/video_loop_on.png"))
-        self.image_video_replay = ImageTk.PhotoImage(Image.open("assets/images/video_replay.png"))
-        self.image_video_record_off = ImageTk.PhotoImage(Image.open("assets/images/video_record_off.png"))
-        self.image_video_record_on = ImageTk.PhotoImage(Image.open("assets/images/video_record_on.png"))
-        self.image_file_open = ImageTk.PhotoImage(Image.open("assets/images/file_open.png"))
-        self.image_video_snapshot = ImageTk.PhotoImage(Image.open("assets/images/video_snapshot.png"))
-        self.image_video_blank = ImageTk.PhotoImage(Image.open("assets/images/camera_blank.png"))
+        self.icon_camera_off = ImageTk.PhotoImage(Image.open("assets/images/video_camera_off.png"))
+        self.icon_camera_on = ImageTk.PhotoImage(Image.open("assets/images/video_camera_on.png"))
+        self.icon_loop_off = ImageTk.PhotoImage(Image.open("assets/images/video_loop_off.png"))
+        self.icon_loop_on = ImageTk.PhotoImage(Image.open("assets/images/video_loop_on.png"))
+        self.icon_replay = ImageTk.PhotoImage(Image.open("assets/images/video_replay.png"))
+        self.icon_record_off = ImageTk.PhotoImage(Image.open("assets/images/video_record_off.png"))
+        self.icon_record_on = ImageTk.PhotoImage(Image.open("assets/images/video_record_on.png"))
+        self.icon_open_file = ImageTk.PhotoImage(Image.open("assets/images/file_open.png"))
+        self.icon_snapshot = ImageTk.PhotoImage(Image.open("assets/images/video_snapshot.png"))
+        self.icon_video_blank = ImageTk.PhotoImage(Image.open("assets/images/camera_blank.png"))
         
         self.canvas = tk.Canvas(self, width=498, height=498)
         self.canvas.pack(anchor="center", padx=20, pady=20)
-        self.canvas.create_image(0, 0, image=self.image_video_blank, anchor='nw')
+        self.canvas.create_image(0, 0, image=self.icon_video_blank, anchor='nw')
 
         self.video_buttons = tk.Frame(self, background="#000C18")
         self.video_buttons.pack()
 
-        self.button_pause = tk.Button(self.video_buttons, image=self.image_video_pause, command=self.switch_play, bd=0, background="#000C18", activebackground="#000C18")
+        self.button_pause = tk.Button(self.video_buttons, image=self.icon_camera_off, command=self.switch_play, bd=0, background="#000C18", activebackground="#000C18")
         self.button_pause.grid(row=1, column=3, padx=15, pady=15)
 
-        self.button_record = tk.Button(self.video_buttons, image=self.image_video_record_off, command=self.video_record, bd=0, background="#000C18", activebackground="#000C18")
+        self.button_record = tk.Button(self.video_buttons, image=self.icon_record_off, command=self.video_record, bd=0, background="#000C18", activebackground="#000C18")
         self.button_record.grid(row=1, column=4, padx=15, pady=15)
 
-        self.button_snapshot = tk.Button(self.video_buttons, image=self.image_video_snapshot, command=self.take_snapshot, bd=0, background="#000C18", activebackground="#000C18")
+        self.button_snapshot = tk.Button(self.video_buttons, image=self.icon_snapshot, command=self.take_snapshot, bd=0, background="#000C18", activebackground="#000C18")
         self.button_snapshot.grid(row=1, column=5, padx=15, pady=15)
 
         self.video_button_effects = tk.Frame(self, background="#000C18")
@@ -1125,7 +1125,7 @@ class CameraPage(tk.Frame):
                     self.end_negative_video()
                     self.end_horizontal_flip_video()
                     self.end_vertical_flip_video()
-                    self.canvas.create_image(0, 0, image=self.image_video_blank, anchor='nw')
+                    self.canvas.create_image(0, 0, image=self.icon_video_blank, anchor='nw')
     
     def switch_play(self):
         if self.video:
@@ -1136,13 +1136,13 @@ class CameraPage(tk.Frame):
     
     def pause_video(self):
         self.video_pause = True
-        self.button_pause.config(image=self.image_video_pause)
+        self.button_pause.config(image=self.icon_camera_off)
         self.end_video_recording()
     
     def resume_video(self):
         if self.video_pause:
             self.video_pause = False
-            self.button_pause.config(image=self.image_video_play)
+            self.button_pause.config(image=self.icon_camera_on)
             self.play_video()
     
     def video_record(self):
@@ -1154,12 +1154,12 @@ class CameraPage(tk.Frame):
     
     def start_video_recording(self):
         self.video.recording = True
-        self.button_record.config(image=self.image_video_record_on)
+        self.button_record.config(image=self.icon_record_on)
         self.video.record_video()
 
     def end_video_recording(self):
         self.video.recording = False
-        self.button_record.config(image=self.image_video_record_off)
+        self.button_record.config(image=self.icon_record_off)
 
    # Face Detection
     
